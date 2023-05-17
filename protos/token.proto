@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message Token {
+    string token = 1;
+    string user_name = 2;
+}

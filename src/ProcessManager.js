@@ -1,27 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, ListGroup, Button, Modal, Form } from 'react-bootstrap';
+import { ProcessManagerClient } from './process_manager_grpc_web_pb.js';
+import { Request } from './request_response_pb';
+
 import axios from 'axios';
 
 function ProcessManager() {
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
+  const client = new ProcessManagerClient('http://localhost:100', null, null);
 
-  useEffect(() => {
+  const request = new Request();
+
+  /* useEffect(() => {
     // Fetch data from external source
     axios.get('https://myapi.com/data')
       .then(response => setData(response.data))
       .catch(error => console.error(error));
-  }, []);
+  }, []); */
 
   const handleActionClick = (action) => {
     // Handle button click
     console.log(`Clicked ${action} button`);
 
     if (action === 'boot') {
+      client.boot(request, {}, (error, response) => {
+        if (error) {
+          console.error('Error:', error.message);
+          // Handle the error
+          return;
+        }
+      
+        console.log('Response:', response);
+        // Handle the response
+      });
       // Show modal with select dropdown
       setShowModal(true);
-    }
+    } else if (action === 'ps') {
+      client.list_process(request, {}, (error, response) => {
+        if (error) {
+          console.error('Error:', error.message);
+          // Handle the error
+          return;
+        }
+      
+        console.log('Response:', response);
+        // Handle the response
+      });
+      // Show modal with select dropdown
+    } 
   };
 
   const handleModalClose = () => {
