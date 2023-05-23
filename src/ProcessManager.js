@@ -1,17 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, ListGroup, Button, Modal, Form } from 'react-bootstrap';
-import { ProcessManagerClient } from './process_manager_grpc_web_pb.js';
-import { Request } from './request_response_pb';
+import { Container, Row, Col, ListGroup, Button, Modal, Form, Alert } from 'react-bootstrap';
+import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
+import { Request, Response } from './generated/request_response_pb';
+import { Token } from './generated/token_pb';
 
-import axios from 'axios';
-
+function logError(error){
+  alert('Error: '+error.message)
+  console.error('Error:', error.message);
+}
 function ProcessManager() {
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
-  const client = new ProcessManagerClient('http://localhost:100', null, null);
+  const client = new ProcessManagerClient('http://localhost:8080', null, null);
+  const token = new Token();
+  token.setToken('abc123');
+  token.setUserName('kralzbyn');
 
   const request = new Request();
+  request.setToken(token);
+
+  const response = new Response();
+  response.setToken(token);
+  
 
   /* useEffect(() => {
     // Fetch data from external source
@@ -22,33 +33,33 @@ function ProcessManager() {
 
   const handleActionClick = (action) => {
     // Handle button click
-    console.log(`Clicked ${action} button`);
-
-    if (action === 'boot') {
+    if (action === 'bootclick') {
+      // Show modal with select dropdown
+      setShowModal(true);
+    }else if (action === 'boot') {
+      setShowModal(false);
+      console.log(selectedOption)
+      console.log(request)
       client.boot(request, {}, (error, response) => {
         if (error) {
-          console.error('Error:', error.message);
-          // Handle the error
+          logError(error)
           return;
         }
       
         console.log('Response:', response);
         // Handle the response
       });
-      // Show modal with select dropdown
-      setShowModal(true);
+      
     } else if (action === 'ps') {
       client.list_process(request, {}, (error, response) => {
         if (error) {
-          console.error('Error:', error.message);
-          // Handle the error
+          logError(error)
           return;
         }
       
         console.log('Response:', response);
         // Handle the response
       });
-      // Show modal with select dropdown
     } 
   };
 
@@ -79,7 +90,7 @@ function ProcessManager() {
       </Row>
       <Row className="actions">
         <Col md="auto">
-          <Button variant="secondary" onClick={() => handleActionClick('boot')}>Boot</Button>{' '}
+          <Button variant="secondary" onClick={() => handleActionClick('bootclick')}>Boot</Button>{' '}
         </Col>
         <Col md="auto">   
           <Button variant="secondary" onClick={() => handleActionClick('logs')}>Logs</Button>{' '}
@@ -88,7 +99,6 @@ function ProcessManager() {
         <Col>
           <Button variant="secondary" onClick={() => handleActionClick('restart')}>Restart</Button>{' '}
           <Button variant="secondary" onClick={() => handleActionClick('killall')}>Kill All</Button>{' '}
-          <Button variant="secondary" onClick={() => handleActionClick('exit')}>Exit</Button>{' '}
           <Button variant="secondary" onClick={() => handleActionClick('ps')}>PS</Button>{' '}
         </Col>
       </Row>
@@ -111,7 +121,7 @@ function ProcessManager() {
           <Button variant="dark" onClick={handleModalClose}>
             Close
           </Button>
-          <Button variant="secondary" onClick={() => handleActionClick(selectedOption)}>
+          <Button variant="secondary" onClick={() => handleActionClick('boot')}>
             Boot
           </Button>
         </Modal.Footer>
