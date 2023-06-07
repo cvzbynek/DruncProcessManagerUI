@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, ListGroup, Button, Modal, Form, Alert } from 'react-bootstrap';
+import { Container, Row, Col, ListGroup, Button, Modal, Form, Table } from 'react-bootstrap';
 import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
 import { Request, Response } from './generated/request_response_pb';
-import { ProcessQuery,ProcessUUID } from './generated/process_manager_pb';
+import { ProcessQuery,ProcessUUID, ProcessInstanceList } from './generated/process_manager_pb';
 import { Token } from './generated/token_pb';
 import * as jspb from 'google-protobuf';
 import { Any } from 'google-protobuf/google/protobuf/any_pb';
@@ -12,6 +12,9 @@ function logError(error){
   console.error('Error:', error.message);
 }
 function ProcessManager() {
+  const [processInstances, setProcessInstances] = useState([]);
+  const [selectedUUIDs, setSelectedUUIDs] = useState([]);
+  const [filter, setFilter] = useState({ uuid: '', user: '', session: '', name: '',isAlive: '', exitCode: '' });
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
@@ -23,13 +26,9 @@ function ProcessManager() {
 
 
   const query = new ProcessQuery();
+  let anotherQuery = new ProcessQuery();
   const uuid = new ProcessUUID();
   let any = new Any();
-  uuid.setUuid(123)
-  query.setName("s");
-  query.setSession("s");
-  query.setUser("s");
-  query.setUuid(uuid);
   query.setForce(true);
   request.setToken(token);
 
@@ -64,10 +63,9 @@ function ProcessManager() {
       });
       
     } else if (action === 'ps') {
-      request.setData(any.pack(query.serializeBinary()))
-      console.log(query)
-      console.log(any.pack(query.serializeBinary(), 'type.googleapis.com/Request'))
-      console.log(request)
+      any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+      request.setData(any)
+      //console.log(any.pack(query.serializeBinary(), 'type.googleapis.com/Request'))
       client.ps(request, {}, (error, response) => {
         if (error) {
           logError(error)
@@ -75,7 +73,16 @@ function ProcessManager() {
         }
       
         console.log('Response:', response);
-        // Handle the response
+        let processInstanceList = new ProcessInstanceList();
+        try {
+          let unpackedData = response.getData().unpack(ProcessInstanceList.deserializeBinary, 'DUNEProcessManager.ProcessInstanceList');
+          processInstanceList = unpackedData instanceof ProcessInstanceList ? unpackedData : null;
+        } catch (error) {
+          console.error('Error unpacking response:', error);
+          return;
+        }
+        console.log('Unpacked response:', processInstanceList.getValuesList());
+        setProcessInstances(processInstanceList.getValuesList());
       });
     } else if (action === 'kill') {
       console.log(request)
@@ -90,6 +97,27 @@ function ProcessManager() {
         // Handle the response
       });
     } 
+  };
+
+  const handleFilterChange = (event, field) => {
+    setFilter({ ...filter, [field]: event.target.value });
+  };
+
+  const filteredProcessInstances = processInstances.filter(processInstance => {
+    return (
+      processInstance.getUuid().getUuid().includes(filter.uuid) &&
+      processInstance.getProcessDescription().getMetadata().getUser().includes(filter.user) &&
+      processInstance.getProcessDescription().getMetadata().getSession().includes(filter.session) &&
+      processInstance.getProcessDescription().getMetadata().getName().includes(filter.name)
+    );
+  });
+  
+  const handleCheckboxChange = (event, uuid) => {
+    if (event.target.checked) {
+      setSelectedUUIDs([...selectedUUIDs, uuid]);
+    } else {
+      setSelectedUUIDs(selectedUUIDs.filter(item => item !== uuid));
+    }
   };
 
   const handleModalClose = () => {
@@ -107,7 +135,7 @@ function ProcessManager() {
     <Container>
       <Row>
         <Col>
-          <h1>Process List</h1>
+          <h1>Control buttons</h1>
           <ListGroup>
             {data.map(item => (
               <ListGroup.Item key={item.id}>
@@ -154,6 +182,70 @@ function ProcessManager() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Row>
+        <Col>
+          <h1>Process List</h1>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>
+                  UUID
+                  <Form.Control
+                    type="text"
+                    placeholder="Filter by UUID"
+                    onChange={(e) => handleFilterChange(e, 'uuid')}
+                  />
+                </th>
+                <th>
+                  User
+                  <Form.Control
+                    type="text"
+                    placeholder="Filter by User"
+                    onChange={(e) => handleFilterChange(e, 'user')}
+                  />
+                </th>
+                <th>
+                  Session
+                  <Form.Control
+                    type="text"
+                    placeholder="Filter by Session"
+                    onChange={(e) => handleFilterChange(e, 'session')}
+                  />
+                </th>
+                <th>
+                  Name
+                  <Form.Control
+                    type="text"
+                    placeholder="Filter by Name"
+                    onChange={(e) => handleFilterChange(e, 'name')}
+                  />
+                </th>
+                <th>Select</th>
+              </tr>
+            </thead>
+            <tbody>
+            {filteredProcessInstances.map((processInstance, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{processInstance.getUuid().getUuid()}</td>
+              <td>{processInstance.getProcessDescription().getMetadata().getUser()}</td>
+              <td>{processInstance.getProcessDescription().getMetadata().getSession()}</td>
+              <td>{processInstance.getProcessDescription().getMetadata().getName()}</td>
+              <td>
+                <Form.Check
+                  type="checkbox"
+                  id={`default-checkbox-${index}`}
+                  label=""
+                  onChange={() => handleCheckboxChange(processInstance.getUuid().getUuid())}
+                />
+              </td>
+            </tr>
+          ))}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
     </Container>
   );
 }
