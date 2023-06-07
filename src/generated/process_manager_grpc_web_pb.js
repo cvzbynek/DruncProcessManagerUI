@@ -204,67 +204,6 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.restart =
  *   !proto.Request,
  *   !proto.Response>}
  */
-const methodDescriptor_ProcessManager_is_alive = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/is_alive',
-  grpc.web.MethodType.UNARY,
-  request_response_pb.Request,
-  request_response_pb.Response,
-  /**
-   * @param {!proto.Request} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  request_response_pb.Response.deserializeBinary
-);
-
-
-/**
- * @param {!proto.Request} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.Response)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.Response>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.is_alive =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/is_alive',
-      request,
-      metadata || {},
-      methodDescriptor_ProcessManager_is_alive,
-      callback);
-};
-
-
-/**
- * @param {!proto.Request} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.Response>}
- *     Promise that resolves to the response
- */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.is_alive =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/is_alive',
-      request,
-      metadata || {},
-      methodDescriptor_ProcessManager_is_alive);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.Request,
- *   !proto.Response>}
- */
 const methodDescriptor_ProcessManager_kill = new grpc.web.MethodDescriptor(
   '/DUNEProcessManager.ProcessManager/kill',
   grpc.web.MethodType.UNARY,
@@ -317,67 +256,6 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.kill =
       request,
       metadata || {},
       methodDescriptor_ProcessManager_kill);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.Request,
- *   !proto.Response>}
- */
-const methodDescriptor_ProcessManager_killall = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/killall',
-  grpc.web.MethodType.UNARY,
-  request_response_pb.Request,
-  request_response_pb.Response,
-  /**
-   * @param {!proto.Request} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  request_response_pb.Response.deserializeBinary
-);
-
-
-/**
- * @param {!proto.Request} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.Response)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.Response>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.killall =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/killall',
-      request,
-      metadata || {},
-      methodDescriptor_ProcessManager_killall,
-      callback);
-};
-
-
-/**
- * @param {!proto.Request} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.Response>}
- *     Promise that resolves to the response
- */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.killall =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/killall',
-      request,
-      metadata || {},
-      methodDescriptor_ProcessManager_killall);
 };
 
 
@@ -448,8 +326,8 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.flush =
  *   !proto.Request,
  *   !proto.Response>}
  */
-const methodDescriptor_ProcessManager_list_process = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/list_process',
+const methodDescriptor_ProcessManager_ps = new grpc.web.MethodDescriptor(
+  '/DUNEProcessManager.ProcessManager/ps',
   grpc.web.MethodType.UNARY,
   request_response_pb.Request,
   request_response_pb.Response,
@@ -474,13 +352,13 @@ const methodDescriptor_ProcessManager_list_process = new grpc.web.MethodDescript
  * @return {!grpc.web.ClientReadableStream<!proto.Response>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.list_process =
+proto.DUNEProcessManager.ProcessManagerClient.prototype.ps =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/list_process',
+      '/DUNEProcessManager.ProcessManager/ps',
       request,
       metadata || {},
-      methodDescriptor_ProcessManager_list_process,
+      methodDescriptor_ProcessManager_ps,
       callback);
 };
 
@@ -493,13 +371,13 @@ proto.DUNEProcessManager.ProcessManagerClient.prototype.list_process =
  * @return {!Promise<!proto.Response>}
  *     Promise that resolves to the response
  */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.list_process =
+proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.ps =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/list_process',
+      '/DUNEProcessManager.ProcessManager/ps',
       request,
       metadata || {},
-      methodDescriptor_ProcessManager_list_process);
+      methodDescriptor_ProcessManager_ps);
 };
 
 
@@ -507,13 +385,13 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.list_process =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.Request,
- *   !proto.DUNEProcessManager.LogLine>}
+ *   !proto.Response>}
  */
 const methodDescriptor_ProcessManager_logs = new grpc.web.MethodDescriptor(
   '/DUNEProcessManager.ProcessManager/logs',
   grpc.web.MethodType.SERVER_STREAMING,
   request_response_pb.Request,
-  proto.DUNEProcessManager.LogLine,
+  request_response_pb.Response,
   /**
    * @param {!proto.Request} request
    * @return {!Uint8Array}
@@ -521,7 +399,7 @@ const methodDescriptor_ProcessManager_logs = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.DUNEProcessManager.LogLine.deserializeBinary
+  request_response_pb.Response.deserializeBinary
 );
 
 
@@ -529,7 +407,7 @@ const methodDescriptor_ProcessManager_logs = new grpc.web.MethodDescriptor(
  * @param {!proto.Request} request The request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.DUNEProcessManager.LogLine>}
+ * @return {!grpc.web.ClientReadableStream<!proto.Response>}
  *     The XHR Node Readable Stream
  */
 proto.DUNEProcessManager.ProcessManagerClient.prototype.logs =
@@ -546,7 +424,7 @@ proto.DUNEProcessManager.ProcessManagerClient.prototype.logs =
  * @param {!proto.Request} request The request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.DUNEProcessManager.LogLine>}
+ * @return {!grpc.web.ClientReadableStream<!proto.Response>}
  *     The XHR Node Readable Stream
  */
 proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.logs =

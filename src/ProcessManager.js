@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, ListGroup, Button, Modal, Form, Alert } from 'react-bootstrap';
 import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
 import { Request, Response } from './generated/request_response_pb';
+import { ProcessQuery,ProcessUUID } from './generated/process_manager_pb';
 import { Token } from './generated/token_pb';
+import * as jspb from 'google-protobuf';
+import { Any } from 'google-protobuf/google/protobuf/any_pb';
 
 function logError(error){
   alert('Error: '+error.message)
@@ -16,8 +19,18 @@ function ProcessManager() {
   const token = new Token();
   token.setToken('abc123');
   token.setUserName('kralzbyn');
-
   const request = new Request();
+
+
+  const query = new ProcessQuery();
+  const uuid = new ProcessUUID();
+  let any = new Any();
+  uuid.setUuid(123)
+  query.setName("s");
+  query.setSession("s");
+  query.setUser("s");
+  query.setUuid(uuid);
+  query.setForce(true);
   request.setToken(token);
 
   const response = new Response();
@@ -51,7 +64,23 @@ function ProcessManager() {
       });
       
     } else if (action === 'ps') {
-      client.list_process(request, {}, (error, response) => {
+      request.setData(any.pack(query.serializeBinary()))
+      console.log(query)
+      console.log(any.pack(query.serializeBinary(), 'type.googleapis.com/Request'))
+      console.log(request)
+      client.ps(request, {}, (error, response) => {
+        if (error) {
+          logError(error)
+          return;
+        }
+      
+        console.log('Response:', response);
+        // Handle the response
+      });
+    } else if (action === 'kill') {
+      console.log(request)
+      console.log(request.getToken())
+      client.kill(request, {}, (error, response) => {
         if (error) {
           logError(error)
           return;
@@ -97,8 +126,7 @@ function ProcessManager() {
           <Button variant="secondary" onClick={() => handleActionClick('kill')}>Kill</Button>{' '}
         </Col>
         <Col>
-          <Button variant="secondary" onClick={() => handleActionClick('restart')}>Restart</Button>{' '}
-          <Button variant="secondary" onClick={() => handleActionClick('killall')}>Kill All</Button>{' '}
+          <Button variant="secondary" onClick={() => handleActionClick('restart')}>Flush</Button>{' '}
           <Button variant="secondary" onClick={() => handleActionClick('ps')}>PS</Button>{' '}
         </Col>
       </Row>

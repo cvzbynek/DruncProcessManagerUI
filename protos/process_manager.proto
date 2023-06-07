@@ -5,14 +5,12 @@ package DUNEProcessManager;
 import "request_response.proto";
 
 service ProcessManager {
-  rpc boot         (Request) returns (Response) {}
-  rpc restart      (Request) returns (Response) {}
-  rpc is_alive     (Request) returns (Response) {}
-  rpc kill         (Request) returns (Response) {}
-  rpc killall      (Request) returns (Response) {}
-  rpc flush        (Request) returns (Response) {}
-  rpc list_process (Request) returns (Response) {}
-  rpc logs         (Request) returns (stream LogLine) {}
+  rpc boot    (Request) returns (Response) {}
+  rpc restart (Request) returns (Response) {}
+  rpc kill    (Request) returns (Response) {}
+  rpc flush   (Request) returns (Response) {}
+  rpc ps      (Request) returns (Response) {}
+  rpc logs    (Request) returns (stream Response) {}
 }
 
 message ProcessRestriction {

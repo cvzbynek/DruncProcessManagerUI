@@ -66,29 +66,3 @@ export namespace Response {
   }
 }
 
-export class Stream extends jspb.Message {
-  getToken(): token_pb.Token | undefined;
-  setToken(value?: token_pb.Token): Stream;
-  hasToken(): boolean;
-  clearToken(): Stream;
-
-  getData(): google_protobuf_any_pb.Any | undefined;
-  setData(value?: google_protobuf_any_pb.Any): Stream;
-  hasData(): boolean;
-  clearData(): Stream;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Stream.AsObject;
-  static toObject(includeInstance: boolean, msg: Stream): Stream.AsObject;
-  static serializeBinaryToWriter(message: Stream, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Stream;
-  static deserializeBinaryFromReader(message: Stream, reader: jspb.BinaryReader): Stream;
-}
-
-export namespace Stream {
-  export type AsObject = {
-    token?: token_pb.Token.AsObject,
-    data?: google_protobuf_any_pb.Any.AsObject,
-  }
-}
-

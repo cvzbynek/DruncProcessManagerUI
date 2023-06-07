@@ -12,8 +12,3 @@ message Response {
     Token token = 1;
     optional google.protobuf.Any data = 2;
 }
-
-message Stream{
-    Token token = 1;
-    google.protobuf.Any data = 2;
-}
