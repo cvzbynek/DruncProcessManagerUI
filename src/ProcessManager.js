@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { Container, Row, Col, ListGroup, Button, Modal, Form, Table } from 'react-bootstrap';
 import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
 import { Request } from './generated/request_response_pb';
-import { ProcessQuery, ProcessUUID, ProcessInstanceList } from './generated/process_manager_pb';
+import { ProcessQuery, ProcessUUID, ProcessInstanceList, LogRequest, LogLine } from './generated/process_manager_pb';
 import { Token } from './generated/token_pb';
 import { Any } from 'google-protobuf/google/protobuf/any_pb';
 
@@ -33,24 +33,25 @@ function ProcessManager() {
 
   const handleKill = useCallback(() => {
     const query = new ProcessQuery();
+    const any = new Any();
+  
     selectedUUIDs.forEach(uuid => {
       const processUUID = new ProcessUUID();
       processUUID.setUuid(uuid);
-      query.addUuid(processUUID);
-    });
-
-    const any = new Any();
-    any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
-    request.setData(any);
-
-    client.kill(request, {}, (error, response) => {
-      if (error) {
-        logError(error)
-        return;
-      }
-
-      console.log('Response:', response);
-      // Handle the response
+      query.setUuid(processUUID);
+  
+      any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+      request.setData(any);
+  
+      client.kill(request, {}, (error, response) => {
+        if (error) {
+          logError(error)
+          return;
+        }
+  
+        console.log('Response:', response);
+        // Handle the response
+      });
     });
   }, [selectedUUIDs, client, request]);
 
@@ -80,6 +81,44 @@ function ProcessManager() {
     });
   }, [client, request]);
 
+  const fetchLogs = useCallback(() => {
+    // Assuming that LogRequest and LogLine are imported from your protobuf definitions
+    const logRequest = new LogRequest();
+    const query = new ProcessQuery();
+    const processUUID = new ProcessUUID();
+  
+    // Here, we're assuming that you want to fetch logs for the first selected UUID.
+    // You might need to adjust this depending on your requirements.
+    processUUID.setUuid(selectedUUIDs[0]);
+    query.setUuid(processUUID);
+  
+    // Set how far back you want the logs. Adjust this value as needed.
+    logRequest.setHowFar(100);
+    logRequest.setQuery(query);
+  
+    const any = new Any();
+    any.pack(logRequest.serializeBinary(), "DUNEProcessManager.LogRequest");
+    request.setData(any);
+  
+    const logLines = [];
+    const call = client.logs(request, {});
+  
+    call.on('data', (response) => {
+      const logLine = response.getData().unpack(LogLine.deserializeBinary, 'DUNEProcessManager.LogLine');
+      logLines.push(logLine.getLine());
+    });
+  
+    call.on('error', (error) => {
+      logError(error);
+    });
+  
+    call.on('end', () => {
+      console.log('Received all log lines:', logLines);
+      // Here you can handle the received log lines. For example, you can set them in the state
+      // and display them in a table.
+    });
+  }, [client, request, selectedUUIDs]);
+
   const handleActionClick = useCallback((action) => {
     // Handle button click
     if (action === 'bootclick') {
@@ -103,8 +142,10 @@ function ProcessManager() {
       ps();
     } else if (action === 'kill') {
       handleKill();
+    } else if (action === 'logs') {
+      fetchLogs();
     } 
-  }, [handleKill, ps, client, request, selectedOption]);
+  }, [handleKill, ps, fetchLogs, client, request, selectedOption]);
 
   const handleFilterChange = useCallback((event, field) => {
     setFilter({ ...filter, [field]: event.target.value });
@@ -155,6 +196,7 @@ function ProcessManager() {
       <Row className="actions">
         <Col md="auto">
           <Button variant="secondary" onClick={() => handleActionClick('bootclick')}>Boot</Button>{' '}
+          <Button variant="secondary" onClick={() => handleActionClick('bootclick')}>Restart</Button>{' '}
         </Col>
         <Col md="auto">   
           <Button variant="secondary" onClick={() => handleActionClick('logs')}>Logs</Button>{' '}
@@ -244,7 +286,7 @@ function ProcessManager() {
                   onChange={(e) => handleFilterChange(e, 'exitCode')}
                   />
                 </th>
-                <th>Select</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
