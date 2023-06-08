@@ -1,49 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Container, Row, Col, ListGroup, Button, Modal, Form, Table } from 'react-bootstrap';
 import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
-import { Request, Response } from './generated/request_response_pb';
-import { ProcessQuery,ProcessUUID, ProcessInstanceList } from './generated/process_manager_pb';
+import { Request } from './generated/request_response_pb';
+import { ProcessQuery, ProcessUUID, ProcessInstanceList } from './generated/process_manager_pb';
 import { Token } from './generated/token_pb';
-import * as jspb from 'google-protobuf';
 import { Any } from 'google-protobuf/google/protobuf/any_pb';
 
 function logError(error){
   alert('Error: '+error.message)
   console.error('Error:', error.message);
 }
+
 function ProcessManager() {
   const [processInstances, setProcessInstances] = useState([]);
   const [selectedUUIDs, setSelectedUUIDs] = useState([]);
   const [filter, setFilter] = useState({ uuid: '', user: '', session: '', name: '',isAlive: '', exitCode: '' });
-  const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
-  const client = new ProcessManagerClient('http://localhost:8080', null, null);
-  const token = new Token();
-  token.setToken('abc123');
-  token.setUserName('kralzbyn');
-  const request = new Request();
 
+  const client = useMemo(() => new ProcessManagerClient('http://localhost:8080', null, null), []);
+  const token = useMemo(() => {
+    const t = new Token();
+    t.setToken('abc123');
+    t.setUserName('kralzbyn');
+    return t;
+  }, []);
+  const request = useMemo(() => {
+    const r = new Request();
+    r.setToken(token);
+    return r;
+  }, [token]);
 
-  //const query = new ProcessQuery();
-  //const uuid = new ProcessUUID();
-  let any = new Any();
-  //query.setForce(true);
-  request.setToken(token);
-
-  const response = new Response();
-  response.setToken(token);
-  
-
-  /* useEffect(() => {
-    // Fetch data from external source
-    axios.get('https://myapi.com/data')
-      .then(response => setData(response.data))
-      .catch(error => console.error(error));
-  }, []); */
-
-
-  const handleKill = () => {
+  const handleKill = useCallback(() => {
     const query = new ProcessQuery();
     selectedUUIDs.forEach(uuid => {
       const processUUID = new ProcessUUID();
@@ -51,6 +39,7 @@ function ProcessManager() {
       query.addUuid(processUUID);
     });
 
+    const any = new Any();
     any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
     request.setData(any);
 
@@ -63,13 +52,14 @@ function ProcessManager() {
       console.log('Response:', response);
       // Handle the response
     });
-  };
+  }, [selectedUUIDs, client, request]);
 
-  const ps = () => {
+  const ps = useCallback(() => {
     const query = new ProcessQuery();
+    const any = new Any();
     any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
     request.setData(any)
-    //console.log(any.pack(query.serializeBinary(), 'type.googleapis.com/Request'))
+
     client.ps(request, {}, (error, response) => {
       if (error) {
         logError(error)
@@ -88,9 +78,9 @@ function ProcessManager() {
       console.log('Unpacked response:', processInstanceList.getValuesList());
       setProcessInstances(processInstanceList.getValuesList());
     });
-  };
+  }, [client, request]);
 
-  const handleActionClick = (action) => {
+  const handleActionClick = useCallback((action) => {
     // Handle button click
     if (action === 'bootclick') {
       // Show modal with select dropdown
@@ -114,57 +104,52 @@ function ProcessManager() {
     } else if (action === 'kill') {
       handleKill();
     } 
-  };
+  }, [handleKill, ps, client, request, selectedOption]);
 
-  const handleFilterChange = (event, field) => {
+  const handleFilterChange = useCallback((event, field) => {
     setFilter({ ...filter, [field]: event.target.value });
-  };
+  }, [filter]);
 
-  const filteredProcessInstances = processInstances.filter(processInstance => {
-    const isAlive = processInstance.getStatusCode() === 0 ? "Yes" : "No";
-    const exitCode = processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : '';
+  const filteredProcessInstances = useMemo(() => {
+    return processInstances.filter(processInstance => {
+      const isAlive = processInstance.getStatusCode() === 0 ? "Yes" : "No";
+      const exitCode = processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : '';
 
-    return (
-      processInstance.getUuid().getUuid().includes(filter.uuid) &&
-      processInstance.getProcessDescription().getMetadata().getUser().includes(filter.user) &&
-      processInstance.getProcessDescription().getMetadata().getSession().includes(filter.session) &&
-      processInstance.getProcessDescription().getMetadata().getName().includes(filter.name) &&
-      (filter.isAlive === '' || filter.isAlive === isAlive) &&
-      (filter.exitCode === '' || filter.exitCode === exitCode)
-    );
-  });
-  
-  const handleCheckboxChange = (event, uuid) => {
+      return (
+        processInstance.getUuid().getUuid().includes(filter.uuid) &&
+        processInstance.getProcessDescription().getMetadata().getUser().includes(filter.user) &&
+        processInstance.getProcessDescription().getMetadata().getSession().includes(filter.session) &&
+        processInstance.getProcessDescription().getMetadata().getName().includes(filter.name) &&
+        (filter.isAlive === '' || filter.isAlive === isAlive) &&
+        (filter.exitCode === '' || filter.exitCode === exitCode)
+      );
+    });
+  }, [processInstances, filter]);
+
+  const handleCheckboxChange = useCallback((event, uuid) => {
     if (event.target.checked) {
       setSelectedUUIDs([...selectedUUIDs, uuid]);
     } else {
       setSelectedUUIDs(selectedUUIDs.filter(item => item !== uuid));
     }
-  };
+  }, [selectedUUIDs]);
 
-  const handleModalClose = () => {
+  const handleModalClose = useCallback(() => {
     // Reset modal state on close
     setShowModal(false);
     setSelectedOption('');
-  };
+  }, []);
 
-  const handleSelectChange = (event) => {
+  const handleSelectChange = useCallback((event) => {
     // Update selected option state
     setSelectedOption(event.target.value);
-  };
+  }, []);
 
   return (
     <Container>
       <Row>
         <Col>
           <h1>Control buttons</h1>
-          <ListGroup>
-            {data.map(item => (
-              <ListGroup.Item key={item.id}>
-                {item.name}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
         </Col>
       </Row>
       <Row className="actions">
@@ -289,6 +274,5 @@ function ProcessManager() {
     </Container>
   );
 }
-
 
 export default ProcessManager;
