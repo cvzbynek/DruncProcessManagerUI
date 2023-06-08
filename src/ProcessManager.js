@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Container, Row, Col, ListGroup, Button, Modal, Form, Table } from 'react-bootstrap';
+import { Container, Row, Col, Button, Modal, Form, Table } from 'react-bootstrap';
 import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
 import { Request } from './generated/request_response_pb';
 import { ProcessQuery, ProcessUUID, ProcessInstanceList, LogRequest, LogLine } from './generated/process_manager_pb';
@@ -16,7 +16,7 @@ function ProcessManager() {
   const [selectedUUIDs, setSelectedUUIDs] = useState([]);
   const [filter, setFilter] = useState({ uuid: '', user: '', session: '', name: '',isAlive: '', exitCode: '' });
   const [showModal, setShowModal] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
+  const [configFile, setConfigFile] = useState(null);
 
   const client = useMemo(() => new ProcessManagerClient('http://localhost:8080', null, null), []);
   const token = useMemo(() => {
@@ -89,7 +89,7 @@ function ProcessManager() {
   
     // Here, we're assuming that you want to fetch logs for the first selected UUID.
     // You might need to adjust this depending on your requirements.
-    processUUID.setUuid(selectedUUIDs[0]);
+processUUID.setUuid(selectedUUIDs[0]);
     query.setUuid(processUUID);
   
     // Set how far back you want the logs. Adjust this value as needed.
@@ -126,17 +126,10 @@ function ProcessManager() {
       setShowModal(true);
     }else if (action === 'boot') {
       setShowModal(false);
-      console.log(selectedOption)
+      console.log(configFile)
       console.log(request)
-      client.boot(request, {}, (error, response) => {
-        if (error) {
-          logError(error)
-          return;
-        }
-      
-        console.log('Response:', response);
-        // Handle the response
-      });
+      // Here you can call your boot function with the selected file
+      console.log('Boot with configuration file:', configFile.name);
       
     } else if (action === 'ps') {
       ps();
@@ -145,7 +138,7 @@ function ProcessManager() {
     } else if (action === 'logs') {
       fetchLogs();
     } 
-  }, [handleKill, ps, fetchLogs, client, request, selectedOption]);
+  }, [handleKill, ps, fetchLogs, client, request, configFile]);
 
   const handleFilterChange = useCallback((event, field) => {
     setFilter({ ...filter, [field]: event.target.value });
@@ -178,12 +171,11 @@ function ProcessManager() {
   const handleModalClose = useCallback(() => {
     // Reset modal state on close
     setShowModal(false);
-    setSelectedOption('');
+    setConfigFile(null);
   }, []);
 
-  const handleSelectChange = useCallback((event) => {
-    // Update selected option state
-    setSelectedOption(event.target.value);
+  const handleFileChange = useCallback((event) => {
+    setConfigFile(event.target.files[0]);
   }, []);
 
   return (
@@ -213,13 +205,8 @@ function ProcessManager() {
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Select boot json:</Form.Label>
-            <Form.Control as="select" value={selectedOption} onChange={handleSelectChange}>
-              <option value="">-- Select --</option>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
-            </Form.Control>
+            <Form.Label>Select boot configuration file:</Form.Label>
+            <Form.Control type="file" onChange={handleFileChange} />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
@@ -298,7 +285,7 @@ function ProcessManager() {
               <td>{processInstance.getProcessDescription().getMetadata().getSession()}</td>
               <td>{processInstance.getProcessDescription().getMetadata().getName()}</td>
               <td>{processInstance.getStatusCode() === 0 ? "Yes" : "No"}</td>
-              <td>{processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : ''}</td>
+<td>{processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : ''}</td>
               <td>
                 <Form.Check
                   type="checkbox"
