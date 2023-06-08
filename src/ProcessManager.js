@@ -25,11 +25,10 @@ function ProcessManager() {
   const request = new Request();
 
 
-  const query = new ProcessQuery();
-  let anotherQuery = new ProcessQuery();
-  const uuid = new ProcessUUID();
+  //const query = new ProcessQuery();
+  //const uuid = new ProcessUUID();
   let any = new Any();
-  query.setForce(true);
+  //query.setForce(true);
   request.setToken(token);
 
   const response = new Response();
@@ -42,6 +41,54 @@ function ProcessManager() {
       .then(response => setData(response.data))
       .catch(error => console.error(error));
   }, []); */
+
+
+  const handleKill = () => {
+    const query = new ProcessQuery();
+    selectedUUIDs.forEach(uuid => {
+      const processUUID = new ProcessUUID();
+      processUUID.setUuid(uuid);
+      query.addUuid(processUUID);
+    });
+
+    any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+    request.setData(any);
+
+    client.kill(request, {}, (error, response) => {
+      if (error) {
+        logError(error)
+        return;
+      }
+
+      console.log('Response:', response);
+      // Handle the response
+    });
+  };
+
+  const ps = () => {
+    const query = new ProcessQuery();
+    any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+    request.setData(any)
+    //console.log(any.pack(query.serializeBinary(), 'type.googleapis.com/Request'))
+    client.ps(request, {}, (error, response) => {
+      if (error) {
+        logError(error)
+        return;
+      }
+    
+      console.log('Response:', response);
+      let processInstanceList = new ProcessInstanceList();
+      try {
+        let unpackedData = response.getData().unpack(ProcessInstanceList.deserializeBinary, 'DUNEProcessManager.ProcessInstanceList');
+        processInstanceList = unpackedData instanceof ProcessInstanceList ? unpackedData : null;
+      } catch (error) {
+        console.error('Error unpacking response:', error);
+        return;
+      }
+      console.log('Unpacked response:', processInstanceList.getValuesList());
+      setProcessInstances(processInstanceList.getValuesList());
+    });
+  };
 
   const handleActionClick = (action) => {
     // Handle button click
@@ -63,39 +110,9 @@ function ProcessManager() {
       });
       
     } else if (action === 'ps') {
-      any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
-      request.setData(any)
-      //console.log(any.pack(query.serializeBinary(), 'type.googleapis.com/Request'))
-      client.ps(request, {}, (error, response) => {
-        if (error) {
-          logError(error)
-          return;
-        }
-      
-        console.log('Response:', response);
-        let processInstanceList = new ProcessInstanceList();
-        try {
-          let unpackedData = response.getData().unpack(ProcessInstanceList.deserializeBinary, 'DUNEProcessManager.ProcessInstanceList');
-          processInstanceList = unpackedData instanceof ProcessInstanceList ? unpackedData : null;
-        } catch (error) {
-          console.error('Error unpacking response:', error);
-          return;
-        }
-        console.log('Unpacked response:', processInstanceList.getValuesList());
-        setProcessInstances(processInstanceList.getValuesList());
-      });
+      ps();
     } else if (action === 'kill') {
-      console.log(request)
-      console.log(request.getToken())
-      client.kill(request, {}, (error, response) => {
-        if (error) {
-          logError(error)
-          return;
-        }
-      
-        console.log('Response:', response);
-        // Handle the response
-      });
+      handleKill();
     } 
   };
 
@@ -104,11 +121,16 @@ function ProcessManager() {
   };
 
   const filteredProcessInstances = processInstances.filter(processInstance => {
+    const isAlive = processInstance.getStatusCode() === 0 ? "Yes" : "No";
+    const exitCode = processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : '';
+
     return (
       processInstance.getUuid().getUuid().includes(filter.uuid) &&
       processInstance.getProcessDescription().getMetadata().getUser().includes(filter.user) &&
       processInstance.getProcessDescription().getMetadata().getSession().includes(filter.session) &&
-      processInstance.getProcessDescription().getMetadata().getName().includes(filter.name)
+      processInstance.getProcessDescription().getMetadata().getName().includes(filter.name) &&
+      (filter.isAlive === '' || filter.isAlive === isAlive) &&
+      (filter.exitCode === '' || filter.exitCode === exitCode)
     );
   });
   
@@ -221,6 +243,22 @@ function ProcessManager() {
                     onChange={(e) => handleFilterChange(e, 'name')}
                   />
                 </th>
+                <th>
+                  Is alive?
+                  <Form.Control as="select" onChange={(e) => handleFilterChange(e, 'isAlive')}>
+                    <option value="">N/A</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </Form.Control>
+                </th>
+                <th>
+                  Exit code
+                  <Form.Control
+                  type="text"
+                  placeholder="Filter by Exit Code"
+                  onChange={(e) => handleFilterChange(e, 'exitCode')}
+                  />
+                </th>
                 <th>Select</th>
               </tr>
             </thead>
@@ -232,12 +270,14 @@ function ProcessManager() {
               <td>{processInstance.getProcessDescription().getMetadata().getUser()}</td>
               <td>{processInstance.getProcessDescription().getMetadata().getSession()}</td>
               <td>{processInstance.getProcessDescription().getMetadata().getName()}</td>
+              <td>{processInstance.getStatusCode() === 0 ? "Yes" : "No"}</td>
+              <td>{processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : ''}</td>
               <td>
                 <Form.Check
                   type="checkbox"
                   id={`default-checkbox-${index}`}
                   label=""
-                  onChange={() => handleCheckboxChange(processInstance.getUuid().getUuid())}
+                  onChange={(event) => handleCheckboxChange(event, processInstance.getUuid().getUuid())}
                 />
               </td>
             </tr>
