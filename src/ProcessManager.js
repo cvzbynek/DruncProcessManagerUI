@@ -7,6 +7,7 @@ import { Request } from './generated/request_response_pb';
 import { ProcessQuery, ProcessUUID, ProcessInstanceList, LogRequest, LogLine, BootRequest, ProcessDescription, ProcessMetadata, ProcessRestriction, ProcessInstance} from './generated/process_manager_pb';
 import { Token } from './generated/token_pb';
 import { Any } from 'google-protobuf/google/protobuf/any_pb';
+import HelpComponent from './helpComponent';
 
 function logError(error){
   alert('Error: '+error.message)
@@ -379,6 +380,9 @@ processUUID.setUuid(selectedUUIDs[0]);
         <FontAwesomeIcon icon={faListAlt} /> PS
       </Button>{' '}
     </Col>
+    <Col className="pl-5">
+      <HelpComponent />
+    </Col>
   </Row>
       <Modal show={showModal} onHide={handleModalClose}>
       <Modal.Header closeButton>
@@ -419,7 +423,7 @@ processUUID.setUuid(selectedUUIDs[0]);
           <th>User</th>
           <th>Session</th>
           <th>Name</th>
-          <th>Is alive?</th>
+          <th>Alive?{' '}{' '}</th>
           <th>Exit code</th>
           <th></th>
         </tr>
