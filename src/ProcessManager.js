@@ -407,97 +407,102 @@ processUUID.setUuid(selectedUUIDs[0]);
         </Button>
       </Modal.Footer>
     </Modal>
-      <Row>
-        <Col>
-          <h1>Process List</h1>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>
-                  UUID
-                  <Form.Control
-                    type="text"
-                    placeholder="Filter by UUID"
-                    onChange={(e) => handleFilterChange(e, 'uuid')}
-                  />
-                </th>
-                <th>
-                  User
-                  <Form.Control
-                    type="text"
-                    placeholder="Filter by User"
-                    onChange={(e) => handleFilterChange(e, 'user')}
-                  />
-                </th>
-                <th>
-                  Session
-                  <Form.Control
-                    type="text"
-                    placeholder="Filter by Session"
-                    onChange={(e) => handleFilterChange(e, 'session')}
-                  />
-                </th>
-                <th>
-                  Name
-                  <Form.Control
-                    type="text"
-                    placeholder="Filter by Name"
-                    onChange={(e) => handleFilterChange(e, 'name')}
-                  />
-                </th>
-                <th>
-                  Is alive?
-                  <Form.Control as="select" onChange={(e) => handleFilterChange(e, 'isAlive')}>
-                    <option value="">N/A</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </Form.Control>
-                </th>
-                <th>
-                  Exit code
-                  <Form.Control
-                  type="text"
-                  placeholder="Filter by Exit Code"
-                  onChange={(e) => handleFilterChange(e, 'exitCode')}
-                  />
-                </th>
-                <th>
-                <Form.Check
-                  type="checkbox"
-                  id="select-all-checkbox"
-                  label=""
-                  checked={allChecked}
-                  onChange={handleSelectAllChange}
-                />
-              </th>
-              </tr>
-            </thead>
-            <tbody>
-            {filteredProcessInstances.map((processInstance, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{processInstance.getUuid().getUuid()}</td>
-              <td>{processInstance.getProcessDescription().getMetadata().getUser()}</td>
-              <td>{processInstance.getProcessDescription().getMetadata().getSession()}</td>
-              <td>{processInstance.getProcessDescription().getMetadata().getName()}</td>
-              <td>{processInstance.getStatusCode() === 0 ? "Yes" : "No"}</td>
-<td>{processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : ''}</td>
-              <td>
+      
+    <Row>
+  <Col>
+    <h1>Process List</h1>
+    <Table striped bordered hover>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>UUID</th>
+          <th>User</th>
+          <th>Session</th>
+          <th>Name</th>
+          <th>Is alive?</th>
+          <th>Exit code</th>
+          <th></th>
+        </tr>
+        <tr>
+          <th></th>
+          <th>
+            <Form.Control
+              type="text"
+              placeholder="Filter by UUID"
+              onChange={(e) => handleFilterChange(e, 'uuid')}
+            />
+          </th>
+          <th>
+            <Form.Control
+              type="text"
+              placeholder="Filter by User"
+              onChange={(e) => handleFilterChange(e, 'user')}
+            />
+          </th>
+          <th>
+            <Form.Control
+              type="text"
+              placeholder="Filter by Session"
+              onChange={(e) => handleFilterChange(e, 'session')}
+            />
+          </th>
+          <th>
+            <Form.Control
+              type="text"
+              placeholder="Filter by Name"
+              onChange={(e) => handleFilterChange(e, 'name')}
+            />
+          </th>
+          <th>
+            <Form.Control as="select" onChange={(e) => handleFilterChange(e, 'isAlive')}>
+              <option value="">N/A</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </Form.Control>
+          </th>
+          <th>
+            <Form.Control
+            type="text"
+            placeholder="Filter by Exit Code"
+            onChange={(e) => handleFilterChange(e, 'exitCode')}
+            />
+          </th>
+          <th>
+            <Form.Check
+              type="checkbox"
+              id="select-all-checkbox"
+              label=""
+              checked={allChecked}
+              onChange={handleSelectAllChange}
+            />
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredProcessInstances.map((processInstance, index) => (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>{processInstance.getUuid().getUuid()}</td>
+            <td>{processInstance.getProcessDescription().getMetadata().getUser()}</td>
+            <td>{processInstance.getProcessDescription().getMetadata().getSession()}</td>
+            <td>{processInstance.getProcessDescription().getMetadata().getName()}</td>
+            <td>{processInstance.getStatusCode() === 0 ? "Yes" : "No"}</td>
+            <td>{processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : ''}</td>
+            <td>
               <Form.Check
-                  type="checkbox"
-                  id={`default-checkbox-${index}`}
-                  label=""
-                  checked={selectedUUIDs.includes(processInstance.getUuid().getUuid())}
-                  onChange={(event) => handleCheckboxChange(event, processInstance.getUuid().getUuid())}
-                />
-              </td>
-            </tr>
-          ))}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
+                type="checkbox"
+                id={`default-checkbox-${index}`}
+                label=""
+                checked={selectedUUIDs.includes(processInstance.getUuid().getUuid())}
+                onChange={(event) => handleCheckboxChange(event, processInstance.getUuid().getUuid())}
+              />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
+  </Col>
+</Row>
     </Container>
   );
 }
