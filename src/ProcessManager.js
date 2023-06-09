@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Container, Row, Col, Button, Modal, Form, Table } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlayCircle, faSyncAlt, faBookOpen, faStopCircle, faEraser, faRedoAlt, faListAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
 import { Request } from './generated/request_response_pb';
 import { ProcessQuery, ProcessUUID, ProcessInstanceList, LogRequest, LogLine, BootRequest, ProcessDescription, ProcessMetadata, ProcessRestriction, ProcessInstance} from './generated/process_manager_pb';
@@ -41,6 +43,9 @@ function ProcessManager() {
     }
   }, [processInstances]);
 
+  function timeout(delay) {
+    return new Promise( res => setTimeout(res, delay) );
+  }
   const client = useMemo(() => new ProcessManagerClient('http://localhost:8080', null, null), []);
   const token = useMemo(() => {
     const t = new Token();
@@ -161,6 +166,30 @@ function ProcessManager() {
     });
   }, [selectedUUIDs, client, request]);
 
+  const handleRestart = useCallback(() => {
+    const query = new ProcessQuery();
+    const any = new Any();
+  
+    selectedUUIDs.forEach(uuid => {
+      const processUUID = new ProcessUUID();
+      processUUID.setUuid(uuid);
+      query.setUuid(processUUID);
+  
+      any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+      request.setData(any);
+  
+      client.restart(request, {}, (error, response) => {
+        if (error) {
+          logError(error)
+          return;
+        }
+  
+        console.log('Response:', response);
+        // Handle the response
+      });
+    });
+  }, [selectedUUIDs, client, request]);
+
   const ps = useCallback(() => {
     const query = new ProcessQuery();
     const any = new Any();
@@ -188,6 +217,10 @@ function ProcessManager() {
     setSelectAll(false);
   }, [client, request]);
 
+  useEffect(() => {
+    ps();
+  }, [ps]);
+  
   const fetchLogs = useCallback(() => {
     // Assuming that LogRequest and LogLine are imported from your protobuf definitions
     const logRequest = new LogRequest();
@@ -237,17 +270,32 @@ processUUID.setUuid(selectedUUIDs[0]);
       console.log(request)
       boot(configFile, user, session)
       console.log('Boot with configuration file:', configFile.name);
-      
+      setTimeout(async () => {
+        await ps();
+      }, 1000);
+      ps();
     } else if (action === 'ps') {
       setSelectedUUIDs([]);
       ps();
     } else if (action === 'kill') {
       handleKill();
+      setTimeout(async () => {
+        await ps();
+      }, 1000);
     } else if (action === 'logs') {
       fetchLogs();
+      ps();
     }  else if (action === 'flush') {
       handleFlush();
-    } 
+      setTimeout(async () => {
+        await ps();
+      }, 1000);
+    } else if (action === 'restart') {
+      handleRestart();
+      setTimeout(async () => {
+        await ps();
+      }, 1000);
+    }
   }, [handleKill, ps, fetchLogs, client, request, configFile, user, session]);
 
   const handleFilterChange = useCallback((event, field) => {
@@ -298,26 +346,40 @@ processUUID.setUuid(selectedUUIDs[0]);
 
   return (
     <Container>
-      <Row>
-        <Col>
-          <h1>Control buttons</h1>
-        </Col>
-      </Row>
-      <Row className="actions">
-        <Col md="auto">
-          <Button variant="secondary" onClick={() => handleActionClick('bootclick')}>Boot</Button>{' '}
-          <Button variant="secondary" onClick={() => handleActionClick('bootclick')}>Restart</Button>{' '}
-        </Col>
-        <Col md="auto">   
-          <Button variant="secondary" onClick={() => handleActionClick('logs')}>Logs</Button>{' '}
-          <Button variant="secondary" onClick={() => handleActionClick('kill')}>Kill</Button>{' '}
-        </Col>
-        <Col>
-          <Button variant="secondary" onClick={() => handleActionClick('flush')}>Flush</Button>{' '}
-          <Button variant="secondary" onClick={() => handleActionClick('restart')}>Restart</Button>{' '}
-          <Button variant="secondary" onClick={() => handleActionClick('ps')}>PS</Button>{' '}
-        </Col>
-      </Row>
+       <Row className="mb-5">
+    <Col>
+      <h1 className="font-weight-bold">Control buttons</h1>
+    </Col>
+  </Row>
+  <Row className="actions mb-5">
+    <Col md="auto" className="pr-5">
+      <Button variant="success" onClick={() => handleActionClick('bootclick')}>
+        <FontAwesomeIcon icon={faPlayCircle} /> Boot
+      </Button>{' '}
+      <Button variant="warning" onClick={() => handleActionClick('bootclick')}>
+        <FontAwesomeIcon icon={faSyncAlt} /> Restart
+      </Button>{' '}
+    </Col>
+    <Col md="auto" className="px-5">   
+      <Button variant="primary" onClick={() => handleActionClick('logs')}>
+        <FontAwesomeIcon icon={faBookOpen} /> Logs
+      </Button>{' '}
+      <Button variant="danger" onClick={() => handleActionClick('kill')}>
+        <FontAwesomeIcon icon={faStopCircle} /> Kill
+      </Button>{' '}
+    </Col>
+    <Col className="pl-5">
+      <Button variant="info" onClick={() => handleActionClick('flush')}>
+        <FontAwesomeIcon icon={faEraser} /> Flush
+      </Button>{' '}
+      <Button variant="secondary" onClick={() => handleActionClick('restart')}>
+        <FontAwesomeIcon icon={faRedoAlt} /> Restart
+      </Button>{' '}
+      <Button variant="light" onClick={() => handleActionClick('ps')}>
+        <FontAwesomeIcon icon={faListAlt} /> PS
+      </Button>{' '}
+    </Col>
+  </Row>
       <Modal show={showModal} onHide={handleModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>Boot Options</Modal.Title>
