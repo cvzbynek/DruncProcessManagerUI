@@ -8,6 +8,7 @@ import { ProcessQuery, ProcessUUID, ProcessInstanceList, LogRequest, LogLine, Bo
 import { Token } from './generated/token_pb';
 import { Any } from 'google-protobuf/google/protobuf/any_pb';
 import HelpComponent from './helpComponent';
+import LogModal from './LogModal';
 
 function logError(error){
   alert('Error: '+error.message)
@@ -19,6 +20,8 @@ function ProcessManager() {
   const [selectedUUIDs, setSelectedUUIDs] = useState([]);
   const [filter, setFilter] = useState({ uuid: '', user: '', session: '', name: '',isAlive: '', exitCode: '' });
   const [showModal, setShowModal] = useState(false);
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [modalData, setModalData] = useState([]);
   const [configFile, setConfigFile] = useState(null);
   const [user, setUser] = useState('');
   const [session, setSession] = useState('');
@@ -212,7 +215,6 @@ function ProcessManager() {
         console.error('Error unpacking response:', error);
         return;
       }
-      console.log('Unpacked response:', processInstanceList.getValuesList());
       setProcessInstances(processInstanceList.getValuesList());
     });
     setSelectAll(false);
@@ -230,7 +232,7 @@ function ProcessManager() {
   
     // Here, we're assuming that you want to fetch logs for the first selected UUID.
     // You might need to adjust this depending on your requirements.
-processUUID.setUuid(selectedUUIDs[0]);
+    processUUID.setUuid(selectedUUIDs[0]);
     query.setUuid(processUUID);
   
     // Set how far back you want the logs. Adjust this value as needed.
@@ -243,21 +245,20 @@ processUUID.setUuid(selectedUUIDs[0]);
   
     const logLines = [];
     const call = client.logs(request, {});
-  
     call.on('data', (response) => {
       const logLine = response.getData().unpack(LogLine.deserializeBinary, 'DUNEProcessManager.LogLine');
       logLines.push(logLine.getLine());
     });
-  
+
     call.on('error', (error) => {
       logError(error);
     });
-  
+
     call.on('end', () => {
-      console.log('Received all log lines:', logLines);
-      // Here you can handle the received log lines. For example, you can set them in the state
-      // and display them in a table.
+      setModalData(logLines);
+      setShowLogModal(true);
     });
+    console.log(modalData)
   }, [client, request, selectedUUIDs]);
 
   const handleActionClick = useCallback((action) => {
@@ -352,6 +353,11 @@ processUUID.setUuid(selectedUUIDs[0]);
       <h1 className="font-weight-bold">Control buttons</h1>
     </Col>
   </Row>
+  <LogModal
+      show={showLogModal}
+      onHide={() => setShowLogModal(false)}
+      data={modalData}
+    />
   <Row className="actions mb-5">
     <Col md="auto" className="pr-5">
       <Button variant="success" onClick={() => handleActionClick('bootclick')}>
