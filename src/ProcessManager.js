@@ -129,8 +129,8 @@ function ProcessManager() {
     selectedUUIDs.forEach(uuid => {
       const processUUID = new ProcessUUID();
       processUUID.setUuid(uuid);
-      query.setUuid(processUUID);
-  
+      query.addUuids(processUUID);
+    });
       any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
       request.setData(any);
   
@@ -143,7 +143,6 @@ function ProcessManager() {
         console.log('Response:', response);
         // Handle the response
       });
-    });
   }, [selectedUUIDs, client, request]);
 
   const handleFlush = useCallback(() => {
@@ -153,8 +152,8 @@ function ProcessManager() {
     selectedUUIDs.forEach(uuid => {
       const processUUID = new ProcessUUID();
       processUUID.setUuid(uuid);
-      query.setUuid(processUUID);
-  
+      query.addUuids(processUUID);
+    });
       any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
       request.setData(any);
   
@@ -167,7 +166,6 @@ function ProcessManager() {
         console.log('Response:', response);
         // Handle the response
       });
-    });
   }, [selectedUUIDs, client, request]);
 
   const handleRestart = useCallback(() => {
@@ -177,8 +175,8 @@ function ProcessManager() {
     selectedUUIDs.forEach(uuid => {
       const processUUID = new ProcessUUID();
       processUUID.setUuid(uuid);
-      query.setUuid(processUUID);
-  
+      query.addUuids(processUUID);
+    });
       any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
       request.setData(any);
   
@@ -191,11 +189,12 @@ function ProcessManager() {
         console.log('Response:', response);
         // Handle the response
       });
-    });
+    
   }, [selectedUUIDs, client, request]);
 
   const ps = useCallback(() => {
     const query = new ProcessQuery();
+    query.addNames(".*")
     const any = new Any();
     any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
     request.setData(any)
@@ -216,6 +215,7 @@ function ProcessManager() {
         return;
       }
       setProcessInstances(processInstanceList.getValuesList());
+      console.log(processInstances);
     });
     setSelectAll(false);
   }, [client, request]);
@@ -233,8 +233,9 @@ function ProcessManager() {
     // Here, we're assuming that you want to fetch logs for the first selected UUID.
     // You might need to adjust this depending on your requirements.
     processUUID.setUuid(selectedUUIDs[0]);
-    query.setUuid(processUUID);
-  
+    query.addUuids(processUUID);
+    console.log(processUUID)
+    console.log(selectedUUIDs[0])
     // Set how far back you want the logs. Adjust this value as needed.
     logRequest.setHowFar(100);
     logRequest.setQuery(query);
@@ -350,7 +351,7 @@ function ProcessManager() {
     <Container>
        <Row className="mb-5">
     <Col>
-      <h1 className="font-weight-bold">Control buttons</h1>
+      <h1 className="font-weight-bold"></h1>
     </Col>
   </Row>
   <LogModal
@@ -363,7 +364,7 @@ function ProcessManager() {
       <Button variant="success" onClick={() => handleActionClick('bootclick')}>
         <FontAwesomeIcon icon={faPlayCircle} /> Boot
       </Button>{' '}
-      <Button variant="warning" onClick={() => handleActionClick('bootclick')}>
+      <Button variant="warning" onClick={() => handleActionClick('restart')}>
         <FontAwesomeIcon icon={faSyncAlt} /> Restart
       </Button>{' '}
     </Col>
@@ -378,9 +379,6 @@ function ProcessManager() {
     <Col className="pl-5">
       <Button variant="info" onClick={() => handleActionClick('flush')}>
         <FontAwesomeIcon icon={faEraser} /> Flush
-      </Button>{' '}
-      <Button variant="secondary" onClick={() => handleActionClick('restart')}>
-        <FontAwesomeIcon icon={faRedoAlt} /> Restart
       </Button>{' '}
       <Button variant="light" onClick={() => handleActionClick('ps')}>
         <FontAwesomeIcon icon={faListAlt} /> PS
@@ -420,15 +418,15 @@ function ProcessManager() {
       
     <Row>
   <Col>
-    <h1>Process List</h1>
+    <h1></h1>
     <Table striped bordered hover>
       <thead>
         <tr>
           <th>#</th>
           <th>UUID</th>
+          <th>Name</th>
           <th>User</th>
           <th>Session</th>
-          <th>Name</th>
           <th>Alive?{' '}{' '}</th>
           <th>Exit code</th>
           <th></th>
@@ -445,6 +443,13 @@ function ProcessManager() {
           <th>
             <Form.Control
               type="text"
+              placeholder="Filter by Name"
+              onChange={(e) => handleFilterChange(e, 'name')}
+            />
+          </th>
+          <th>
+            <Form.Control
+              type="text"
               placeholder="Filter by User"
               onChange={(e) => handleFilterChange(e, 'user')}
             />
@@ -454,13 +459,6 @@ function ProcessManager() {
               type="text"
               placeholder="Filter by Session"
               onChange={(e) => handleFilterChange(e, 'session')}
-            />
-          </th>
-          <th>
-            <Form.Control
-              type="text"
-              placeholder="Filter by Name"
-              onChange={(e) => handleFilterChange(e, 'name')}
             />
           </th>
           <th>
@@ -493,9 +491,9 @@ function ProcessManager() {
           <tr key={index}>
             <td>{index + 1}</td>
             <td>{processInstance.getUuid().getUuid()}</td>
+            <td>{processInstance.getProcessDescription().getMetadata().getName()}</td>
             <td>{processInstance.getProcessDescription().getMetadata().getUser()}</td>
             <td>{processInstance.getProcessDescription().getMetadata().getSession()}</td>
-            <td>{processInstance.getProcessDescription().getMetadata().getName()}</td>
             <td>{processInstance.getStatusCode() === 0 ? "Yes" : "No"}</td>
             <td>{processInstance.getReturnCode() ? processInstance.getReturnCode().toString() : ''}</td>
             <td>

@@ -128,10 +128,15 @@ export namespace ProcessMetadata {
 }
 
 export class ProcessQuery extends jspb.Message {
-  getUuid(): ProcessUUID | undefined;
-  setUuid(value?: ProcessUUID): ProcessQuery;
-  hasUuid(): boolean;
-  clearUuid(): ProcessQuery;
+  getUuidsList(): Array<ProcessUUID>;
+  setUuidsList(value: Array<ProcessUUID>): ProcessQuery;
+  clearUuidsList(): ProcessQuery;
+  addUuids(value?: ProcessUUID, index?: number): ProcessUUID;
+
+  getNamesList(): Array<string>;
+  setNamesList(value: Array<string>): ProcessQuery;
+  clearNamesList(): ProcessQuery;
+  addNames(value: string, index?: number): ProcessQuery;
 
   getUser(): string;
   setUser(value: string): ProcessQuery;
@@ -143,14 +148,6 @@ export class ProcessQuery extends jspb.Message {
   hasSession(): boolean;
   clearSession(): ProcessQuery;
 
-  getName(): string;
-  setName(value: string): ProcessQuery;
-  hasName(): boolean;
-  clearName(): ProcessQuery;
-
-  getForce(): boolean;
-  setForce(value: boolean): ProcessQuery;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessQuery.AsObject;
   static toObject(includeInstance: boolean, msg: ProcessQuery): ProcessQuery.AsObject;
@@ -161,31 +158,20 @@ export class ProcessQuery extends jspb.Message {
 
 export namespace ProcessQuery {
   export type AsObject = {
-    uuid?: ProcessUUID.AsObject,
+    uuidsList: Array<ProcessUUID.AsObject>,
+    namesList: Array<string>,
     user?: string,
     session?: string,
-    name?: string,
-    force: boolean,
-  }
-
-  export enum UuidCase { 
-    _UUID_NOT_SET = 0,
-    UUID = 1,
   }
 
   export enum UserCase { 
     _USER_NOT_SET = 0,
-    USER = 2,
+    USER = 3,
   }
 
   export enum SessionCase { 
     _SESSION_NOT_SET = 0,
-    SESSION = 3,
-  }
-
-  export enum NameCase { 
-    _NAME_NOT_SET = 0,
-    NAME = 4,
+    SESSION = 4,
   }
 }
 

@@ -146,7 +146,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.DUNEProcessManager.ProcessQuery = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.DUNEProcessManager.ProcessQuery.repeatedFields_, null);
 };
 goog.inherits(proto.DUNEProcessManager.ProcessQuery, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -1221,6 +1221,13 @@ proto.DUNEProcessManager.ProcessMetadata.prototype.setName = function(value) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.DUNEProcessManager.ProcessQuery.repeatedFields_ = [1,2];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -1252,11 +1259,11 @@ proto.DUNEProcessManager.ProcessQuery.prototype.toObject = function(opt_includeI
  */
 proto.DUNEProcessManager.ProcessQuery.toObject = function(includeInstance, msg) {
   var f, obj = {
-    uuid: (f = msg.getUuid()) && proto.DUNEProcessManager.ProcessUUID.toObject(includeInstance, f),
-    user: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    session: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    force: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
+    uuidsList: jspb.Message.toObjectList(msg.getUuidsList(),
+    proto.DUNEProcessManager.ProcessUUID.toObject, includeInstance),
+    namesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+    user: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    session: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -1296,23 +1303,19 @@ proto.DUNEProcessManager.ProcessQuery.deserializeBinaryFromReader = function(msg
     case 1:
       var value = new proto.DUNEProcessManager.ProcessUUID;
       reader.readMessage(value,proto.DUNEProcessManager.ProcessUUID.deserializeBinaryFromReader);
-      msg.setUuid(value);
+      msg.addUuids(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUser(value);
+      msg.addNames(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setSession(value);
+      msg.setUser(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
-      break;
-    case 5:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setForce(value);
+      msg.setSession(value);
       break;
     default:
       reader.skipField();
@@ -1343,17 +1346,17 @@ proto.DUNEProcessManager.ProcessQuery.prototype.serializeBinary = function() {
  */
 proto.DUNEProcessManager.ProcessQuery.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUuid();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getUuidsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
       1,
       f,
       proto.DUNEProcessManager.ProcessUUID.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
-    writer.writeString(
+  f = message.getNamesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
       2,
       f
     );
@@ -1372,94 +1375,89 @@ proto.DUNEProcessManager.ProcessQuery.serializeBinaryToWriter = function(message
       f
     );
   }
-  f = message.getForce();
-  if (f) {
-    writer.writeBool(
-      5,
-      f
-    );
-  }
 };
 
 
 /**
- * optional ProcessUUID uuid = 1;
- * @return {?proto.DUNEProcessManager.ProcessUUID}
+ * repeated ProcessUUID uuids = 1;
+ * @return {!Array<!proto.DUNEProcessManager.ProcessUUID>}
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.getUuid = function() {
-  return /** @type{?proto.DUNEProcessManager.ProcessUUID} */ (
-    jspb.Message.getWrapperField(this, proto.DUNEProcessManager.ProcessUUID, 1));
+proto.DUNEProcessManager.ProcessQuery.prototype.getUuidsList = function() {
+  return /** @type{!Array<!proto.DUNEProcessManager.ProcessUUID>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.DUNEProcessManager.ProcessUUID, 1));
 };
 
 
 /**
- * @param {?proto.DUNEProcessManager.ProcessUUID|undefined} value
+ * @param {!Array<!proto.DUNEProcessManager.ProcessUUID>} value
  * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
 */
-proto.DUNEProcessManager.ProcessQuery.prototype.setUuid = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
+proto.DUNEProcessManager.ProcessQuery.prototype.setUuidsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * Clears the message field making it undefined.
+ * @param {!proto.DUNEProcessManager.ProcessUUID=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.DUNEProcessManager.ProcessUUID}
+ */
+proto.DUNEProcessManager.ProcessQuery.prototype.addUuids = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.DUNEProcessManager.ProcessUUID, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
  * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.clearUuid = function() {
-  return this.setUuid(undefined);
+proto.DUNEProcessManager.ProcessQuery.prototype.clearUuidsList = function() {
+  return this.setUuidsList([]);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * repeated string names = 2;
+ * @return {!Array<string>}
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.hasUuid = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.DUNEProcessManager.ProcessQuery.prototype.getNamesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
 /**
- * optional string user = 2;
- * @return {string}
+ * @param {!Array<string>} value
+ * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.getUser = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.DUNEProcessManager.ProcessQuery.prototype.setNamesList = function(value) {
+  return jspb.Message.setField(this, 2, value || []);
 };
 
 
 /**
  * @param {string} value
+ * @param {number=} opt_index
  * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.setUser = function(value) {
-  return jspb.Message.setField(this, 2, value);
+proto.DUNEProcessManager.ProcessQuery.prototype.addNames = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
 };
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the list making it empty but non-null.
  * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.clearUser = function() {
-  return jspb.Message.setField(this, 2, undefined);
+proto.DUNEProcessManager.ProcessQuery.prototype.clearNamesList = function() {
+  return this.setNamesList([]);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.DUNEProcessManager.ProcessQuery.prototype.hasUser = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * optional string session = 3;
+ * optional string user = 3;
  * @return {string}
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.getSession = function() {
+proto.DUNEProcessManager.ProcessQuery.prototype.getUser = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -1468,7 +1466,7 @@ proto.DUNEProcessManager.ProcessQuery.prototype.getSession = function() {
  * @param {string} value
  * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.setSession = function(value) {
+proto.DUNEProcessManager.ProcessQuery.prototype.setUser = function(value) {
   return jspb.Message.setField(this, 3, value);
 };
 
@@ -1477,7 +1475,7 @@ proto.DUNEProcessManager.ProcessQuery.prototype.setSession = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.clearSession = function() {
+proto.DUNEProcessManager.ProcessQuery.prototype.clearUser = function() {
   return jspb.Message.setField(this, 3, undefined);
 };
 
@@ -1486,16 +1484,16 @@ proto.DUNEProcessManager.ProcessQuery.prototype.clearSession = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.hasSession = function() {
+proto.DUNEProcessManager.ProcessQuery.prototype.hasUser = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
- * optional string name = 4;
+ * optional string session = 4;
  * @return {string}
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.getName = function() {
+proto.DUNEProcessManager.ProcessQuery.prototype.getSession = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -1504,7 +1502,7 @@ proto.DUNEProcessManager.ProcessQuery.prototype.getName = function() {
  * @param {string} value
  * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.setName = function(value) {
+proto.DUNEProcessManager.ProcessQuery.prototype.setSession = function(value) {
   return jspb.Message.setField(this, 4, value);
 };
 
@@ -1513,7 +1511,7 @@ proto.DUNEProcessManager.ProcessQuery.prototype.setName = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.clearName = function() {
+proto.DUNEProcessManager.ProcessQuery.prototype.clearSession = function() {
   return jspb.Message.setField(this, 4, undefined);
 };
 
@@ -1522,26 +1520,8 @@ proto.DUNEProcessManager.ProcessQuery.prototype.clearName = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.DUNEProcessManager.ProcessQuery.prototype.hasName = function() {
+proto.DUNEProcessManager.ProcessQuery.prototype.hasSession = function() {
   return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * optional bool force = 5;
- * @return {boolean}
- */
-proto.DUNEProcessManager.ProcessQuery.prototype.getForce = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.DUNEProcessManager.ProcessQuery} returns this
- */
-proto.DUNEProcessManager.ProcessQuery.prototype.setForce = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
