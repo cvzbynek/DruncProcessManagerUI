@@ -1,12 +1,12 @@
 import React from 'react';
 import { Container, Navbar } from 'react-bootstrap';
 
-function Boot() {
+function BootstrapDune() {
   return (
     <Navbar bg="dark" variant="dark" className="container-fluid">
       <img
         alt=""
-        src="/logo.png"
+        src="/DUNElogo_black-409x260.jpg"
         width="100"
         height="80"
         className="ms-5"
@@ -20,4 +20,4 @@ function Boot() {
   );
 }
 
-export default Boot;
+export default BootstrapDune;
