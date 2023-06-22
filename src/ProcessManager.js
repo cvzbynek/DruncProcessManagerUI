@@ -9,6 +9,7 @@ import { Token } from './generated/token_pb';
 import { Any } from 'google-protobuf/google/protobuf/any_pb';
 import HelpComponent from './helpComponent';
 import LogModal from './LogModal';
+import { debounce } from 'lodash';
 
 function logError(error){
   alert('Error: '+error.message)
@@ -263,47 +264,50 @@ function ProcessManager() {
   }, [client, request, selectedUUIDs]);
 
   const handleActionClick = useCallback((action) => {
-    // Handle button click
-    if (action === 'bootclick') {
-      // Show modal with select dropdown
-      setShowModal(true);
-    }else if (action === 'boot') {
-      setShowModal(false);
-      console.log(configFile)
-      console.log(request)
-      boot(configFile, user, session)
-      console.log('Boot with configuration file:', configFile.name);
-      setTimeout(async () => {
-        await ps();
-      }, 1000);
-      ps();
-    } else if (action === 'ps') {
-      setSelectedUUIDs([]);
-      ps();
-    } else if (action === 'kill') {
-      handleKill();
-      setTimeout(async () => {
-        await ps();
-      }, 1000);
-    } else if (action === 'logs') {
-      fetchLogs();
-      ps();
-    }  else if (action === 'flush') {
-      handleFlush();
-      setTimeout(async () => {
-        await ps();
-      }, 1000);
-    } else if (action === 'restart') {
-      handleRestart();
-      setTimeout(async () => {
-        await ps();
-      }, 1000);
+    switch (action) {
+      case 'bootclick':
+        setShowModal(true);
+        break;
+      case 'boot':
+        setShowModal(false);
+        boot(configFile, user, session)
+        setTimeout(ps, 1000);
+        break;
+      case 'ps':
+        setSelectedUUIDs([]);
+        ps();
+        break;
+      case 'kill':
+        handleKill();
+        setTimeout(ps, 1000);
+        break;
+      case 'logs':
+        fetchLogs();
+        ps();
+        break;
+      case 'flush':
+        handleFlush();
+        setTimeout(ps, 1000);
+        break;
+      case 'restart':
+        handleRestart();
+        setTimeout(ps, 1000);
+        break;
+      default:
+        break;
     }
   }, [handleKill, ps, fetchLogs, client, request, configFile, user, session]);
 
   const handleFilterChange = useCallback((event, field) => {
     setFilter({ ...filter, [field]: event.target.value });
   }, [filter]);
+
+  const debouncedHandleFilterChange = useCallback(
+    debounce((event, field) => {
+      setFilter({ ...filter, [field]: event.target.value });
+    }, 300), // 300ms delay
+    [filter]
+  );
 
   const filteredProcessInstances = useMemo(() => {
     return processInstances.filter(processInstance => {
@@ -434,31 +438,31 @@ function ProcessManager() {
         <tr>
           <th></th>
           <th>
-            <Form.Control
-              type="text"
-              placeholder="Filter by UUID"
-              onChange={(e) => handleFilterChange(e, 'uuid')}
-            />
+          <Form.Control
+            type="text"
+            placeholder="Filter by UUID"
+            onChange={(e) => debouncedHandleFilterChange(e, 'uuid')}
+          />
           </th>
           <th>
             <Form.Control
               type="text"
               placeholder="Filter by Name"
-              onChange={(e) => handleFilterChange(e, 'name')}
+              onChange={(e) => debouncedHandleFilterChange(e, 'name')}
             />
           </th>
           <th>
             <Form.Control
               type="text"
               placeholder="Filter by User"
-              onChange={(e) => handleFilterChange(e, 'user')}
+              onChange={(e) => debouncedHandleFilterChange(e, 'user')}
             />
           </th>
           <th>
             <Form.Control
               type="text"
               placeholder="Filter by Session"
-              onChange={(e) => handleFilterChange(e, 'session')}
+              onChange={(e) => debouncedHandleFilterChange(e, 'session')}
             />
           </th>
           <th>
@@ -472,7 +476,7 @@ function ProcessManager() {
             <Form.Control
             type="text"
             placeholder="Filter by Exit Code"
-            onChange={(e) => handleFilterChange(e, 'exitCode')}
+            onChange={(e) => debouncedHandleFilterChange(e, 'exitCode')}
             />
           </th>
           <th>
