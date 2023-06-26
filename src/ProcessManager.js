@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Container, Row, Col, Button, Modal, Form, Table } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlayCircle, faSyncAlt, faBookOpen, faStopCircle, faEraser, faRedoAlt, faListAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPlayCircle, faSyncAlt, faFileAlt, faStopCircle, faEraser, faRedoAlt, faListAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
 import { Request } from './generated/request_response_pb';
 import { ProcessQuery, ProcessUUID, ProcessInstanceList, LogRequest, LogLine, BootRequest, ProcessDescription, ProcessMetadata, ProcessRestriction, ProcessInstance} from './generated/process_manager_pb';
@@ -11,6 +11,8 @@ import HelpComponent from './HelpComponent';
 import LogModal from './LogModal';
 import { debounce } from 'lodash';
 import BootModal from './BootModal';
+import KillConfirmationModal from './KillConfirmationModal';
+import RestartConfirmationModal from './RestartConfirmationModal';
 
 function logError(error){
   alert('Error: '+error.message)
@@ -29,6 +31,10 @@ function ProcessManager() {
   const [session, setSession] = useState('');
   const [selectAll, setSelectAll] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
+  const [processName, setProcessName] = useState("");
+  const [showKillConfirm, setShowKillConfirm] = useState(false);
+  const [showRestartConfirm, setShowRestartConfirm] = useState(false);
+  const [selectedNames, setSelectedNames] = useState([]);
 
   useEffect(() => {
     if (processInstances.length === 0) {
@@ -41,11 +47,16 @@ function ProcessManager() {
   }, [selectedUUIDs, processInstances]);
 
   const handleSelectAllChange = useCallback((event) => {
-    setAllChecked(event.target.checked);
     if (event.target.checked) {
-      setSelectedUUIDs(processInstances.map(processInstance => processInstance.getUuid().getUuid()));
+      const newUUIDs = processInstances.map(processInstance => processInstance.getUuid().getUuid());
+      setSelectedUUIDs(newUUIDs);
+      const newNames = processInstances.map(processInstance => processInstance.getProcessDescription().getMetadata().getName());
+      setSelectedNames(newNames);
+      setSelectAll(true);
     } else {
       setSelectedUUIDs([]);
+      setSelectedNames([]);
+      setSelectAll(false);
     }
   }, [processInstances]);
 
@@ -123,8 +134,18 @@ function ProcessManager() {
     }
   }, [client, request]);
 
-
   const handleKill = useCallback(() => {
+    console.log('selectedNames')
+    console.log(selectedNames)
+    console.log(selectedUUIDs)
+    setShowKillConfirm(true);
+  }, []);
+  
+  const handleRestart = useCallback(() => {
+    setShowRestartConfirm(true);
+  }, []);
+
+  const confirmKill = useCallback(() => {
     const query = new ProcessQuery();
     const any = new Any();
   
@@ -133,18 +154,21 @@ function ProcessManager() {
       processUUID.setUuid(uuid);
       query.addUuids(processUUID);
     });
-      any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
-      request.setData(any);
   
-      client.kill(request, {}, (error, response) => {
-        if (error) {
-          logError(error)
-          return;
-        }
+    any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+    request.setData(any);
   
-        console.log('Response:', response);
-        // Handle the response
-      });
+    client.kill(request, {}, (error, response) => {
+      if (error) {
+        logError(error)
+        return;
+      }
+  
+      console.log('Response:', response);
+      // Handle the response
+    });
+  
+    setShowKillConfirm(false); // Close the modal after the request is sent
   }, [selectedUUIDs, client, request]);
 
   const handleFlush = useCallback(() => {
@@ -170,7 +194,7 @@ function ProcessManager() {
       });
   }, [selectedUUIDs, client, request]);
 
-  const handleRestart = useCallback(() => {
+  const confirmRestart = useCallback(() => {
     const query = new ProcessQuery();
     const any = new Any();
   
@@ -179,19 +203,21 @@ function ProcessManager() {
       processUUID.setUuid(uuid);
       query.addUuids(processUUID);
     });
-      any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
-      request.setData(any);
   
-      client.restart(request, {}, (error, response) => {
-        if (error) {
-          logError(error)
-          return;
-        }
+    any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+    request.setData(any);
   
-        console.log('Response:', response);
-        // Handle the response
-      });
-    
+    client.restart(request, {}, (error, response) => {
+      if (error) {
+        logError(error)
+        return;
+      }
+  
+      console.log('Response:', response);
+      // Handle the response
+    });
+  
+    setShowRestartConfirm(false); // Close the modal after the request is sent
   }, [selectedUUIDs, client, request]);
 
   const ps = useCallback(() => {
@@ -226,26 +252,21 @@ function ProcessManager() {
     ps();
   }, [ps]);
   
-  const fetchLogs = useCallback(() => {
-    // Assuming that LogRequest and LogLine are imported from your protobuf definitions
+  const fetchLogs = useCallback((uuid, name) => {
     const logRequest = new LogRequest();
     const query = new ProcessQuery();
     const processUUID = new ProcessUUID();
-  
-    // Here, we're assuming that you want to fetch logs for the first selected UUID.
-    // You might need to adjust this depending on your requirements.
-    processUUID.setUuid(selectedUUIDs[0]);
+
+    processUUID.setUuid(uuid);
     query.addUuids(processUUID);
-    console.log(processUUID)
-    console.log(selectedUUIDs[0])
-    // Set how far back you want the logs. Adjust this value as needed.
+
     logRequest.setHowFar(100);
     logRequest.setQuery(query);
-  
+
     const any = new Any();
     any.pack(logRequest.serializeBinary(), "DUNEProcessManager.LogRequest");
     request.setData(any);
-  
+
     const logLines = [];
     const call = client.logs(request, {});
     call.on('data', (response) => {
@@ -260,9 +281,9 @@ function ProcessManager() {
     call.on('end', () => {
       setModalData(logLines);
       setShowLogModal(true);
+      setProcessName(name);
     });
-    console.log(modalData)
-  }, [client, request, selectedUUIDs]);
+  }, [client, request]);
 
   const handleActionClick = useCallback((action) => {
     switch (action) {
@@ -326,7 +347,7 @@ function ProcessManager() {
     });
   }, [processInstances, filter]);
 
-  const handleCheckboxChange = useCallback((event, uuid) => {
+  const handleCheckboxChange = useCallback((event, uuid, name) => {
     if (event.target.checked) {
       setSelectedUUIDs(prevUUIDs => {
         const newUUIDs = [...prevUUIDs, uuid];
@@ -336,9 +357,11 @@ function ProcessManager() {
         }
         return newUUIDs;
       });
+      setSelectedNames(prevNames => [...prevNames, name]);
     } else {
       setSelectAll(false);
       setSelectedUUIDs(prevUUIDs => prevUUIDs.filter(item => item !== uuid));
+      setSelectedNames(prevNames => prevNames.filter(item => item !== name));
     }
   }, [processInstances]);
 
@@ -354,17 +377,14 @@ function ProcessManager() {
 
   return (
     <Container>
-       <Row className="mb-5">
-    <Col>
-      <h1 className="font-weight-bold"></h1>
-    </Col>
-  </Row>
   <LogModal
-      show={showLogModal}
-      onHide={() => setShowLogModal(false)}
-      data={modalData}
-    />
+    show={showLogModal}
+    onHide={() => setShowLogModal(false)}
+    data={modalData}
+    processName={processName}
+  />
   <Row className="actions mb-5">
+    <h2>Multiple process actions</h2>
     <Col md="auto" className="pr-5">
       <Button variant="success" onClick={() => handleActionClick('bootclick')}>
         <FontAwesomeIcon icon={faPlayCircle} /> Boot
@@ -374,9 +394,6 @@ function ProcessManager() {
       </Button>{' '}
     </Col>
     <Col md="auto" className="px-5">   
-      <Button variant="primary" onClick={() => handleActionClick('logs')}>
-        <FontAwesomeIcon icon={faBookOpen} /> Logs
-      </Button>{' '}
       <Button variant="danger" onClick={() => handleActionClick('kill')}>
         <FontAwesomeIcon icon={faStopCircle} /> Kill
       </Button>{' '}
@@ -393,6 +410,18 @@ function ProcessManager() {
       <HelpComponent />
     </Col>
   </Row>
+  <KillConfirmationModal
+    show={showKillConfirm}
+    onHide={() => setShowKillConfirm(false)}
+    onConfirm={confirmKill}
+    processNames={selectedNames}
+  />
+  <RestartConfirmationModal
+    show={showRestartConfirm}
+    onHide={() => setShowRestartConfirm(false)}
+    onConfirm={confirmRestart}
+    processNames={selectedNames}
+  />
   <BootModal 
       showModal={showModal}
       handleModalClose={handleModalClose}
@@ -417,6 +446,7 @@ function ProcessManager() {
           <th>Alive?{' '}{' '}</th>
           <th>Exit code</th>
           <th></th>
+          <th>Show logs</th>
         </tr>
         <tr>
           <th></th>
@@ -469,13 +499,18 @@ function ProcessManager() {
               label=""
               checked={allChecked}
               onChange={handleSelectAllChange}
+              style={{ transform: 'scale(1.2)' }}
             />
           </th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         {filteredProcessInstances.map((processInstance, index) => (
-          <tr key={index}>
+          <tr 
+            key={index}
+            className={processInstance.getStatusCode() === 0 ? "table-success" : "table-danger"}
+          >
             <td>{index + 1}</td>
             <td>{processInstance.getUuid().getUuid()}</td>
             <td>{processInstance.getProcessDescription().getMetadata().getName()}</td>
@@ -489,8 +524,14 @@ function ProcessManager() {
                 id={`default-checkbox-${index}`}
                 label=""
                 checked={selectedUUIDs.includes(processInstance.getUuid().getUuid())}
-                onChange={(event) => handleCheckboxChange(event, processInstance.getUuid().getUuid())}
+                onChange={(event) => handleCheckboxChange(event, processInstance.getUuid().getUuid(), processInstance.getProcessDescription().getMetadata().getName())}
+                style={{ transform: 'scale(1.2)' }}
               />
+            </td>
+            <td style={{ textAlign: 'center' }}>
+            <Button variant="default" onClick={() => fetchLogs(processInstance.getUuid().getUuid())}>
+              <FontAwesomeIcon icon={faFileAlt} size="2x" />
+              </Button>
             </td>
           </tr>
         ))}
