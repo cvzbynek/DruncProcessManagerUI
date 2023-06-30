@@ -35,6 +35,8 @@ function ProcessManager() {
   const [showKillConfirm, setShowKillConfirm] = useState(false);
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
   const [selectedNames, setSelectedNames] = useState([]);
+  const [howFar, setHowFar] = useState(100);
+  const [currentUUID, setCurrentUUID] = useState('');
 
   useEffect(() => {
     if (processInstances.length === 0) {
@@ -249,7 +251,8 @@ function ProcessManager() {
     ps();
   }, [ps]);
   
-  const fetchLogs = useCallback((uuid, name) => {
+  const fetchLogs = useCallback((uuid, name, howFar) => {
+    setCurrentUUID(uuid);
     const logRequest = new LogRequest();
     const query = new ProcessQuery();
     const processUUID = new ProcessUUID();
@@ -257,7 +260,7 @@ function ProcessManager() {
     processUUID.setUuid(uuid);
     query.addUuids(processUUID);
 
-    logRequest.setHowFar(100);
+    logRequest.setHowFar(howFar);
     logRequest.setQuery(query);
 
     const any = new Any();
@@ -277,10 +280,12 @@ function ProcessManager() {
 
     call.on('end', () => {
       setModalData(logLines);
-      setShowLogModal(true);
       setProcessName(name);
+      setShowLogModal(true);
     });
   }, [client, request]);
+
+  const debouncedFetchLogs = useCallback(debounce(fetchLogs, 500), [fetchLogs]);
 
   const handleActionClick = useCallback((action) => {
     switch (action) {
@@ -319,7 +324,11 @@ function ProcessManager() {
   const handleFilterChange = useCallback((event, field) => {
     setFilter({ ...filter, [field]: event.target.value });
   }, [filter]);
-
+  const handleLogModalClose = useCallback(() => {
+  setShowLogModal(false);
+  setCurrentUUID('');
+  setHowFar(100);
+}, []);
   const debouncedHandleFilterChange = useCallback(
     debounce((event, field) => {
       setFilter({ ...filter, [field]: event.target.value });
@@ -375,11 +384,13 @@ function ProcessManager() {
 
   return (
     <Container>
-  <LogModal
-    show={showLogModal}
-    onHide={() => setShowLogModal(false)}
+  <LogModal 
+    show={showLogModal} 
+    onHide={handleLogModalClose} 
     data={modalData}
     processName={processName}
+    fetchLogs={debouncedFetchLogs}
+    uuid={currentUUID}
   />
   <Row className="actions mb-5">
     <h2>Multiple process actions</h2>
