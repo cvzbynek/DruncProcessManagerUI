@@ -15,7 +15,8 @@ const LogModal = ({ show, onHide, data, processName, fetchLogs, uuid }) => {
 
   useEffect(() => {
     if (!prevShow && show) { // Only call when the modal is opening
-      debouncedFetchLogs(uuid, processName, inputValue);
+      setInputValue(100); // reset the inputValue to 100 each time the modal opens
+      debouncedFetchLogs(uuid, processName, 100);
     }
   }, [show, uuid, processName, inputValue, debouncedFetchLogs]);
 
