@@ -128,16 +128,12 @@ function ProcessManager() {
         }
   
         const processInstance = response.getData().unpack(ProcessInstance.deserializeBinary, 'DUNEProcessManager.ProcessInstance');
-        console.log('ProcessInstance:', processInstance);
         // Handle the ProcessInstance here
       });
     }
   }, [client, request]);
 
   const handleKill = useCallback(() => {
-    console.log('selectedNames')
-    console.log(selectedNames)
-    console.log(selectedUUIDs)
     setShowKillConfirm(true);
   }, []);
   
@@ -146,6 +142,7 @@ function ProcessManager() {
   }, []);
 
   const confirmKill = useCallback(() => {
+    console.log('killa')
     const query = new ProcessQuery();
     const any = new Any();
   
@@ -171,10 +168,10 @@ function ProcessManager() {
     setShowKillConfirm(false); // Close the modal after the request is sent
   }, [selectedUUIDs, client, request]);
 
+
   const handleFlush = useCallback(() => {
     const query = new ProcessQuery();
     const any = new Any();
-  
     selectedUUIDs.forEach(uuid => {
       const processUUID = new ProcessUUID();
       processUUID.setUuid(uuid);
@@ -218,6 +215,7 @@ function ProcessManager() {
     });
   
     setShowRestartConfirm(false); // Close the modal after the request is sent
+    setTimeout(ps, 1000);
   }, [selectedUUIDs, client, request]);
 
   const ps = useCallback(() => {
@@ -243,7 +241,6 @@ function ProcessManager() {
         return;
       }
       setProcessInstances(processInstanceList.getValuesList());
-      console.log(processInstances);
     });
     setSelectAll(false);
   }, [client, request]);
@@ -301,7 +298,6 @@ function ProcessManager() {
         break;
       case 'kill':
         handleKill();
-        setTimeout(ps, 1000);
         break;
       case 'logs':
         fetchLogs();
@@ -313,12 +309,12 @@ function ProcessManager() {
         break;
       case 'restart':
         handleRestart();
-        setTimeout(ps, 1000);
+        
         break;
       default:
         break;
     }
-  }, [handleKill, ps, fetchLogs, client, request, configFile, user, session]);
+  },  [handleKill, ps, fetchLogs, client, request, configFile, user, session, handleFlush]);
 
   const handleFilterChange = useCallback((event, field) => {
     setFilter({ ...filter, [field]: event.target.value });
@@ -348,22 +344,24 @@ function ProcessManager() {
   }, [processInstances, filter]);
 
   const handleCheckboxChange = useCallback((event, uuid, name) => {
+    setSelectAll(false);
     if (event.target.checked) {
-      setSelectedUUIDs(prevUUIDs => {
-        const newUUIDs = [...prevUUIDs, uuid];
+      setSelectedUUIDs((prevUUIDs) => {
+        // New variable for clearer code
+        const updatedUUIDs = [...prevUUIDs, uuid];
         // Check if all checkboxes are checked
-        if (newUUIDs.length === processInstances.length) {
+        if (updatedUUIDs.length === processInstances.length) {
           setSelectAll(true);
         }
-        return newUUIDs;
+        return updatedUUIDs;
       });
-      setSelectedNames(prevNames => [...prevNames, name]);
+
+      setSelectedNames((prevNames) => [...prevNames, name]);
     } else {
-      setSelectAll(false);
-      setSelectedUUIDs(prevUUIDs => prevUUIDs.filter(item => item !== uuid));
-      setSelectedNames(prevNames => prevNames.filter(item => item !== name));
+      setSelectedUUIDs((prevUUIDs) => prevUUIDs.filter((item) => item !== uuid));
+      setSelectedNames((prevNames) => prevNames.filter((item) => item !== name));
     }
-  }, [processInstances]);
+  }, [processInstances, setSelectAll, setSelectedUUIDs, setSelectedNames]);
 
   const handleModalClose = useCallback(() => {
     // Reset modal state on close
@@ -391,35 +389,35 @@ function ProcessManager() {
       </Button>{' '}
       <Button variant="warning" onClick={() => handleActionClick('restart')}>
         <FontAwesomeIcon icon={faSyncAlt} /> Restart
-      </Button>{' '}
-    </Col>
-    <Col md="auto" className="px-5">   
+      </Button>{' '} 
       <Button variant="danger" onClick={() => handleActionClick('kill')}>
         <FontAwesomeIcon icon={faStopCircle} /> Kill
       </Button>{' '}
-    </Col>
-    <Col className="pl-5">
       <Button variant="info" onClick={() => handleActionClick('flush')}>
         <FontAwesomeIcon icon={faEraser} /> Flush
       </Button>{' '}
+    </Col>
+    <Col className="pr-5">
       <Button variant="light" onClick={() => handleActionClick('ps')}>
-        <FontAwesomeIcon icon={faListAlt} /> PS
+        <FontAwesomeIcon icon={faListAlt} /> Update
       </Button>{' '}
     </Col>
-    <Col className="pl-5">
-      <HelpComponent />
+    <Col className="pr-5">
+      <div className="d-flex justify-content-end">
+       <HelpComponent />
+      </div>
     </Col>
   </Row>
   <KillConfirmationModal
     show={showKillConfirm}
     onHide={() => setShowKillConfirm(false)}
-    onConfirm={confirmKill}
     processNames={selectedNames}
+    handleKill={confirmKill} 
   />
   <RestartConfirmationModal
     show={showRestartConfirm}
     onHide={() => setShowRestartConfirm(false)}
-    onConfirm={confirmRestart}
+    handleRestart={confirmRestart}
     processNames={selectedNames}
   />
   <BootModal 
@@ -435,7 +433,7 @@ function ProcessManager() {
     <Row>
   <Col>
     <h1></h1>
-    <Table striped bordered hover>
+    <Table striped hover variant="dark" style={{ borderRadius: '10px', overflow: 'hidden' }}>
       <thead>
         <tr>
           <th>#</th>
@@ -446,7 +444,7 @@ function ProcessManager() {
           <th>Alive?{' '}{' '}</th>
           <th>Exit code</th>
           <th></th>
-          <th>Show logs</th>
+          <th>Logs</th>
         </tr>
         <tr>
           <th></th>
