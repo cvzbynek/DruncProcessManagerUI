@@ -187,8 +187,7 @@ function ProcessManager() {
           logError(error)
           return;
         }
-  
-        console.log('Response:', response);
+        console.log(selectedUUIDs);
         // Handle the response
       });
   }, [selectedUUIDs, client, request]);
@@ -311,6 +310,8 @@ function ProcessManager() {
       case 'flush':
         handleFlush();
         setTimeout(ps, 1000);
+        setSelectedUUIDs([]);
+        setSelectedNames([]);
         break;
       case 'restart':
         handleRestart();
