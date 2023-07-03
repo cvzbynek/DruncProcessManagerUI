@@ -62,9 +62,6 @@ function ProcessManager() {
     }
   }, [processInstances]);
 
-  function timeout(delay) {
-    return new Promise( res => setTimeout(res, delay) );
-  }
   const client = useMemo(() => new ProcessManagerClient(`http://${process.env.INTERFACE_ADDRESS || 'localhost'}:${process.env.INTERFACE_PORT || '8080'}`, null, null), []);
   const token = useMemo(() => {
     const t = new Token();
