@@ -9,7 +9,11 @@ RUN npm run build
 
 # envoy build
 FROM envoyproxy/envoy:v1.18.3 as envoy-build
+ARG ENDPOINT_ADDRESS=192.168.200.1
+ARG ENDPOINT_PORT=100
 COPY ./envoy/envoy.yaml /etc/envoy/envoy.yaml
+RUN sed -i "s/address: 192.168.200.1/address: ${ENDPOINT_ADDRESS}/" /etc/envoy/envoy.yaml
+RUN sed -i "s/port_value: 100/port_value: ${ENDPOINT_PORT}/" /etc/envoy/envoy.yaml
 
 # production environment
 FROM nginx:stable
@@ -23,6 +27,9 @@ RUN apt-get update \
 
 # Check the network connection with curl
 RUN curl -L google.com > /dev/null
+
+ENV INTERFACE_ADDRESS=localhost
+ENV INTERFACE_PORT=8080
 
 COPY --from=build /app/build /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
