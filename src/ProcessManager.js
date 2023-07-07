@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Container, Row, Col, Button, Modal, Form, Table } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Table } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlayCircle, faSyncAlt, faFileAlt, faStopCircle, faEraser, faRedoAlt, faListAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPlayCircle, faSyncAlt, faFileAlt, faStopCircle, faEraser, faListAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProcessManagerClient } from './generated/process_manager_grpc_web_pb.js';
 import { Request } from './generated/request_response_pb';
 import { ProcessQuery, ProcessUUID, ProcessInstanceList, LogRequest, LogLine, BootRequest, ProcessDescription, ProcessMetadata, ProcessRestriction, ProcessInstance} from './generated/process_manager_pb';
@@ -62,9 +62,7 @@ function ProcessManager() {
     }
   }, [processInstances]);
 
-  function timeout(delay) {
-    return new Promise( res => setTimeout(res, delay) );
-  }
+  
   const client = useMemo(() => new ProcessManagerClient('http://localhost:8080', null, null), []);
   const token = useMemo(() => {
     const t = new Token();
@@ -144,7 +142,6 @@ function ProcessManager() {
   }, []);
 
   const confirmKill = useCallback(() => {
-    console.log('killa')
     const query = new ProcessQuery();
     const any = new Any();
   
