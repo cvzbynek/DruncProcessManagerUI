@@ -1,41 +1,56 @@
-import React, { useState } from 'react';
-import { Button, Form, Container, Row, Col } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
 
-const SignIn = ({ onSignIn }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const App = () => {
+    const [keycloak, setKeycloak] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const userId = Math.floor(Math.random() * 1000);
-    sessionStorage.setItem('username', username);
-    sessionStorage.setItem('userId', userId);
-    onSignIn();
-  };
+    useEffect(() => {
+        const initKeycloak = () => {
+            const kc = window.Keycloak({
+                url: 'https://auth.cern.ch/auth',
+                realm: 'cern',
+                clientId: 'dune_sso_test',
+            });
 
-  return (
-    <Container>
-      <Row className="justify-content-md-center mt-5">
-        <Col xs={12} md={6}>
-          <Form onSubmit={handleSubmit} className="p-4 border rounded-3 bg-light">
-            <Form.Group controlId="formBasicUsername" className="mb-3">
-              <Form.Label>Username</Form.Label>
-              <Form.Control type="text" placeholder="Enter username" name="username" onChange={(e) => setUsername(e.target.value)} required />
-            </Form.Group>
+            kc.init({ onLoad: 'login-required', flow: 'implicit' }).then((authenticated) => {
+                if (authenticated) {
+                    displayTokenInfo(kc);
+                }
+            }).catch(() => {
+                alert('Failed to initialize');
+            });
 
-            <Form.Group controlId="formBasicPassword" className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" name="password" onChange={(e) => setPassword(e.target.value)} required />
-            </Form.Group>
+            setKeycloak(kc);
+        };
 
-            <Button variant="primary" type="submit" className="w-100">
-              Submit
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
-  );
+        const script = document.createElement("script");
+        script.src = "https://auth.cern.ch/auth/js/keycloak.js";
+        script.onload = initKeycloak;
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
+    const displayTokenInfo = (keycloakInstance) => {
+        console.log('ryba')
+        console.log(keycloakInstance.token)
+        sessionStorage.setItem('raw-token', keycloakInstance.token);
+        sessionStorage.setItem('parsed-token', JSON.stringify(keycloakInstance.tokenParsed));
+    };
+
+    return (
+        <div>
+            <div><b>Hello</b></div>
+            <input type="button" onClick={() => keycloak.logout()} value="Log Out" />
+
+            <h2>Raw Token</h2>
+            <div><p>{sessionStorage.getItem('raw-token')}</p></div>
+
+            <h2>Parsed Token</h2>
+            <div><pre>{sessionStorage.getItem('parsed-token')}</pre></div>
+        </div>
+    );
 };
 
-export default SignIn;
+export default App;
