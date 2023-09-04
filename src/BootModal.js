@@ -13,10 +13,6 @@ const BootModal = ({showModal, handleModalClose, handleActionClick, handleFileCh
           <Form.Control type="file" onChange={handleFileChange} />
         </Form.Group>
         <Form.Group>
-          <Form.Label>User:</Form.Label>
-          <Form.Control type="text" value={user} onChange={(e) => setUser(e.target.value)} />
-        </Form.Group>
-        <Form.Group>
           <Form.Label>Session:</Form.Label>
           <Form.Control type="text" value={session} onChange={(e) => setSession(e.target.value)} />
         </Form.Group>

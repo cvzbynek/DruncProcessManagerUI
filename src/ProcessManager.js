@@ -66,8 +66,8 @@ function ProcessManager() {
   const client = useMemo(() => new ProcessManagerClient('http://localhost:8080', null, null), []);
   const token = useMemo(() => {
     const t = new Token();
-    t.setToken('abc123');
-    t.setUserName('kralzbyn');
+    t.setToken(sessionStorage.getItem('userId'));
+    t.setUserName(sessionStorage.getItem('username'));
     return t;
   }, []);
   const request = useMemo(() => {
@@ -105,7 +105,7 @@ function ProcessManager() {
       const processMetadata = new ProcessMetadata();
       const processRestriction = new ProcessRestriction();
   
-      processMetadata.setUser(user);
+      processMetadata.setUser(sessionStorage.getItem('username'));
       processMetadata.setSession(session);
       processMetadata.setName(app.name);
   
