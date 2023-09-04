@@ -390,33 +390,35 @@ function ProcessManager() {
     fetchLogs={debouncedFetchLogs}
     uuid={currentUUID}
   />
-  <Row className="actions mb-5">
-    <h2>Multiple process actions</h2>
-    <Col md="auto" className="pr-5">
-      <Button variant="success" onClick={() => handleActionClick('bootclick')}>
-        <FontAwesomeIcon icon={faPlayCircle} /> Boot
-      </Button>{' '}
-      <Button variant="warning" onClick={() => handleActionClick('restart')}>
-        <FontAwesomeIcon icon={faSyncAlt} /> Restart
-      </Button>{' '} 
-      <Button variant="danger" onClick={() => handleActionClick('kill')}>
-        <FontAwesomeIcon icon={faStopCircle} /> Kill
-      </Button>{' '}
-      <Button variant="info" onClick={() => handleActionClick('flush')}>
-        <FontAwesomeIcon icon={faEraser} /> Flush
-      </Button>{' '}
-    </Col>
-    <Col className="pr-5">
-      <Button variant="light" onClick={() => handleActionClick('ps')}>
-        <FontAwesomeIcon icon={faListAlt} /> Update
-      </Button>{' '}
-    </Col>
-    <Col className="pr-5">
-      <div className="d-flex justify-content-end">
-       <HelpComponent />
-      </div>
-    </Col>
-  </Row>
+  {sessionStorage.getItem('roles') && sessionStorage.getItem('roles').includes("admin") ? (
+    <Row className="actions mb-5">
+      <h2>Multiple process actions</h2>
+      <Col md="auto" className="pr-5">
+        <Button variant="success" onClick={() => handleActionClick('bootclick')}>
+          <FontAwesomeIcon icon={faPlayCircle} /> Boot
+        </Button>{' '}
+        <Button variant="warning" onClick={() => handleActionClick('restart')}>
+          <FontAwesomeIcon icon={faSyncAlt} /> Restart
+        </Button>{' '} 
+        <Button variant="danger" onClick={() => handleActionClick('kill')}>
+          <FontAwesomeIcon icon={faStopCircle} /> Kill
+        </Button>{' '}
+        <Button variant="info" onClick={() => handleActionClick('flush')}>
+          <FontAwesomeIcon icon={faEraser} /> Flush
+        </Button>{' '}
+      </Col>
+      <Col className="pr-5">
+        <Button variant="light" onClick={() => handleActionClick('ps')}>
+          <FontAwesomeIcon icon={faListAlt} /> Update
+        </Button>{' '}
+      </Col>
+      <Col className="pr-5">
+        <div className="d-flex justify-content-end">
+        <HelpComponent />
+        </div>
+      </Col>
+    </Row>
+  ) : <div style={{ height: '40px' }}></div>}
   <KillConfirmationModal
     show={showKillConfirm}
     onHide={() => setShowKillConfirm(false)}

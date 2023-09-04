@@ -33,8 +33,6 @@ const App = () => {
     }, []);
 
     const displayTokenInfo = (keycloakInstance) => {
-        console.log('ryba')
-        console.log(keycloakInstance.token)
         sessionStorage.setItem('raw-token', keycloakInstance.token);
         sessionStorage.setItem('parsed-token', JSON.stringify(keycloakInstance.tokenParsed));
     };
