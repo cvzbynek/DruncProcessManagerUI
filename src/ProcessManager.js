@@ -392,7 +392,7 @@ function ProcessManager() {
   />
   {sessionStorage.getItem('roles') && sessionStorage.getItem('roles').includes("admin") ? (
     <Row className="actions mb-5">
-      <h2>Multiple process actions</h2>
+      <div style={{ height: '40px' }}></div>
       <Col md="auto" className="pr-5">
         <Button variant="success" onClick={() => handleActionClick('bootclick')}>
           <FontAwesomeIcon icon={faPlayCircle} /> Boot
@@ -418,7 +418,21 @@ function ProcessManager() {
         </div>
       </Col>
     </Row>
-  ) : <div style={{ height: '40px' }}></div>}
+  ) : 
+  <Row className="actions mb-5">
+    <div style={{ height: '40px' }}></div>
+    <Col className="pr-5">
+        <Button variant="light" onClick={() => handleActionClick('ps')}>
+          <FontAwesomeIcon icon={faListAlt} /> Update
+        </Button>{' '}
+      </Col>
+      <Col className="pr-5">
+        <div className="d-flex justify-content-end">
+        <HelpComponent />
+        </div>
+      </Col>
+  </Row>
+  }
   <KillConfirmationModal
     show={showKillConfirm}
     onHide={() => setShowKillConfirm(false)}

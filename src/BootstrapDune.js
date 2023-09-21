@@ -19,7 +19,7 @@ function BootstrapDune({ keycloak }) {
     sessionStorage.removeItem('username');
     sessionStorage.removeItem('userId');
     sessionStorage.removeItem('roles');
-    keycloak.logout().
+    keycloak.logout();
     window.location.reload();
   };
 

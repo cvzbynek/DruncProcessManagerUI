@@ -42,11 +42,13 @@ const RenderManager = () => {
   }, []);
 
   return (
-    <>
-      <BootstrapDune keycloak={keycloak} />
-      {isLoggedIn ? <ProcessManager /> : <div><h1>Authentication in progress...</h1></div>}
-    </>
-  );
+    isLoggedIn ? (
+      <>
+        <BootstrapDune keycloak={keycloak} />
+        <ProcessManager />
+      </>
+    ) : null
+);
 };
 
 export default RenderManager;
