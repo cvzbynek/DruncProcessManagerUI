@@ -59,4 +59,4 @@ static_resources:
                 address:
                   socket_address:
                     address: 192.168.200.1
-                    port_value: 100
+                    port_value: 10054
