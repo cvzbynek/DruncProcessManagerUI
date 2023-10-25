@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package dunedaq.druncschema;
+
+message Empty { }
+
+message PlainText {
+  string text = 1;
+}
+
+message PlainTextVector {
+  repeated string text = 1;
+}
+message Stacktrace{
+  repeated string text = 1;
+}
+
+message StringStringMap {
+  map<string,string> map = 1;
+}
+
+message int_msg{
+  int64 value=1;
+}
+message float_msg{
+  float value=1;
+}
+message string_msg{
+  string value=1;
+}

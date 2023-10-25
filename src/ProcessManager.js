@@ -118,7 +118,7 @@ function ProcessManager() {
       bootRequest.setProcessRestriction(processRestriction);
   
       const any = new Any();
-      any.pack(bootRequest.serializeBinary(), "DUNEProcessManager.BootRequest");
+      any.pack(bootRequest.serializeBinary(), "dunedaq.druncschema.BootRequest");
       request.setData(any);
   
       client.boot(request, {}, (error, response) => {
@@ -127,7 +127,7 @@ function ProcessManager() {
           return;
         }
   
-        const processInstance = response.getData().unpack(ProcessInstance.deserializeBinary, 'DUNEProcessManager.ProcessInstance');
+        const processInstance = response.getData().unpack(ProcessInstance.deserializeBinary, 'dunedaq.druncschema.ProcessInstance');
         // Handle the ProcessInstance here
       });
     }
@@ -151,7 +151,7 @@ function ProcessManager() {
       query.addUuids(processUUID);
     });
   
-    any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+    any.pack(query.serializeBinary(), "dunedaq.druncschema.ProcessQuery");
     request.setData(any);
   
     client.kill(request, {}, (error, response) => {
@@ -176,7 +176,7 @@ function ProcessManager() {
       processUUID.setUuid(uuid);
       query.addUuids(processUUID);
     });
-      any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+      any.pack(query.serializeBinary(), "dunedaq.druncschema.ProcessQuery");
       request.setData(any);
   
       client.flush(request, {}, (error, response) => {
@@ -199,7 +199,7 @@ function ProcessManager() {
       query.addUuids(processUUID);
     });
   
-    any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+    any.pack(query.serializeBinary(), "dunedaq.druncschema.ProcessQuery");
     request.setData(any);
   
     client.restart(request, {}, (error, response) => {
@@ -218,9 +218,10 @@ function ProcessManager() {
 
   const ps = useCallback(() => {
     const query = new ProcessQuery();
-    query.addNames(".*")
+    query.setNamesList([".*"]);
+
     const any = new Any();
-    any.pack(query.serializeBinary(), "DUNEProcessManager.ProcessQuery");
+    any.pack(query.serializeBinary(), "dunedaq.druncschema.ProcessQuery");
     request.setData(any)
 
     client.ps(request, {}, (error, response) => {
@@ -232,7 +233,7 @@ function ProcessManager() {
       console.log('Response:', response);
       let processInstanceList = new ProcessInstanceList();
       try {
-        let unpackedData = response.getData().unpack(ProcessInstanceList.deserializeBinary, 'DUNEProcessManager.ProcessInstanceList');
+        let unpackedData = response.getData().unpack(ProcessInstanceList.deserializeBinary, 'dunedaq.druncschema.ProcessInstanceList');
         processInstanceList = unpackedData instanceof ProcessInstanceList ? unpackedData : null;
       } catch (error) {
         console.error('Error unpacking response:', error);
@@ -260,13 +261,13 @@ function ProcessManager() {
     logRequest.setQuery(query);
 
     const any = new Any();
-    any.pack(logRequest.serializeBinary(), "DUNEProcessManager.LogRequest");
+    any.pack(logRequest.serializeBinary(), "dunedaq.druncschema.LogRequest");
     request.setData(any);
 
     const logLines = [];
     const call = client.logs(request, {});
     call.on('data', (response) => {
-      const logLine = response.getData().unpack(LogLine.deserializeBinary, 'DUNEProcessManager.LogLine');
+      const logLine = response.getData().unpack(LogLine.deserializeBinary, 'dunedaq.druncschema.LogLine');
       logLines.push(logLine.getLine());
     });
 

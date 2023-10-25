@@ -1,26 +1,48 @@
 syntax = "proto3";
 
-package DUNEProcessManager;
+package dunedaq.druncschema;
 
-import "request_response.proto";
+import "druncschema/request_response.proto";
 
 service ProcessManager {
-  rpc boot    (Request) returns (Response) {}
-  rpc restart (Request) returns (Response) {}
-  rpc kill    (Request) returns (Response) {}
+  rpc describe(Request) returns (Response) {}
+  rpc boot   (Request) returns (Response) {}
+  rpc restart(Request) returns (Response) {}
+  rpc kill   (Request) returns (Response) {}
   rpc flush   (Request) returns (Response) {}
-  rpc ps      (Request) returns (Response) {}
-  rpc logs    (Request) returns (stream Response) {}
+  rpc ps     (Request) returns (Response) {}
+  rpc logs   (Request) returns (stream Response) {}
 }
 
 message ProcessRestriction {
   repeated string allowed_hosts = 1;
   repeated string allowed_host_types = 2;
 }
+
+message CommandNotificationMessage {
+  string user = 1;
+  string command = 2;
+}
+
+message GenericNotificationMessage {
+  string message = 1;
+}
+
+message ExceptionNotification {
+  message StackLine{
+    string line_text = 1;
+    string line_number = 2;
+    string file = 3;
+  };
+  string error_text = 1;
+  repeated StackLine stack_trace = 2;
+}
+
 message LogRequest {
   ProcessQuery query = 1;
   int32 how_far = 2;
 }
+
 message LogLine {
   ProcessUUID uuid = 1;
   string line = 2;
@@ -40,8 +62,8 @@ message ProcessMetadata {
 message ProcessQuery {
   repeated ProcessUUID uuids = 1;
   repeated string names = 2;
-  optional string user = 3;
-  optional string session = 4;
+  string user = 3;
+  string session = 4;
 }
 
 message ProcessDescription {
@@ -66,16 +88,15 @@ message ProcessInstance {
     DEAD = 1;
   };
   StatusCode status_code = 3;
-  optional int32 return_code = 4;
+  int32 return_code = 4;
   ProcessUUID uuid = 5;
 }
 
-message BootRequest {
-  ProcessDescription process_description = 1;
-  ProcessRestriction process_restriction = 2;
-}
+  message BootRequest {
+    ProcessDescription process_description = 1;
+    ProcessRestriction process_restriction = 2;
+  }
 
-
-message ProcessInstanceList{
-  repeated ProcessInstance values = 1;
-}
+  message ProcessInstanceList{
+    repeated ProcessInstance values = 1;
+  }

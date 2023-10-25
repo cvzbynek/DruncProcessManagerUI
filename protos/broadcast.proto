@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package dunedaq.druncschema;
+
+import "druncschema/generic.proto";
+import "druncschema/request_response.proto";
+import "google/protobuf/any.proto";
+
+service BroadcastReceiver {
+  rpc handle_broadcast (BroadcastMessage) returns (Empty) {}
+}
+
+service BroadcastSender {
+  rpc add_to_broadcast_list      (Request) returns (Response) {}
+  rpc remove_from_broadcast_list (Request) returns (Response) {}
+  rpc get_broadcast_list         (Request) returns (Response) {}
+}
+
+
+message KafkaBroadcastHandlerConfiguration{
+  string kafka_address = 1;
+  string topic = 2;
+}
+
+enum BroadcastType {
+  ACK                             = 0;
+  RECEIVER_REMOVED                = 1;
+  RECEIVER_ADDED                  = 2;
+  SERVER_READY                    = 3;
+  SERVER_SHUTDOWN                 = 4;
+  TEXT_MESSAGE                    = 15;
+  COMMAND_EXECUTION_START         = 5;
+  COMMAND_RECEIVED                = 16;
+  COMMAND_EXECUTION_SUCCESS       = 6;
+  EXCEPTION_RAISED                = 7;
+  UNHANDLED_EXCEPTION_RAISED      = 8;
+  STATUS_UPDATE                   = 9;
+  SUBPROCESS_STATUS_UPDATE        = 10;
+  DEBUG                           = 11;
+  CHILD_COMMAND_EXECUTION_START   = 12;
+  CHILD_COMMAND_EXECUTION_SUCCESS = 13;
+  CHILD_COMMAND_EXECUTION_FAILED  = 14;
+  FSM_STATUS_UPDATE               = 17;
+}
+
+message Emitter {
+  string process = 1;
+  string session = 2;
+}
+
+message BroadcastMessage{
+  Emitter emitter = 1;
+  BroadcastType type = 2;
+  google.protobuf.Any data = 3;
+}
+
+message BroadcastRequest {
+  string broadcast_receiver_address = 1;
+}
+
+message BroadcastResponse {
+  bool success = 1;
+}
+

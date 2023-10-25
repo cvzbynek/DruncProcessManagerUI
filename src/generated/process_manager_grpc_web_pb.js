@@ -1,5 +1,5 @@
 /**
- * @fileoverview gRPC-Web generated client stub for DUNEProcessManager
+ * @fileoverview gRPC-Web generated client stub for dunedaq.druncschema
  * @enhanceable
  * @public
  */
@@ -22,7 +22,8 @@ grpc.web = require('grpc-web');
 
 var request_response_pb = require('./request_response_pb.js')
 const proto = {};
-proto.DUNEProcessManager = require('./process_manager_pb.js');
+proto.dunedaq = {};
+proto.dunedaq.druncschema = require('./process_manager_pb.js');
 
 /**
  * @param {string} hostname
@@ -32,7 +33,7 @@ proto.DUNEProcessManager = require('./process_manager_pb.js');
  * @struct
  * @final
  */
-proto.DUNEProcessManager.ProcessManagerClient =
+proto.dunedaq.druncschema.ProcessManagerClient =
     function(hostname, credentials, options) {
   if (!options) options = {};
   options.format = 'text';
@@ -58,7 +59,7 @@ proto.DUNEProcessManager.ProcessManagerClient =
  * @struct
  * @final
  */
-proto.DUNEProcessManager.ProcessManagerPromiseClient =
+proto.dunedaq.druncschema.ProcessManagerPromiseClient =
     function(hostname, credentials, options) {
   if (!options) options = {};
   options.format = 'text';
@@ -79,16 +80,16 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.Request,
- *   !proto.Response>}
+ *   !proto.dunedaq.druncschema.Request,
+ *   !proto.dunedaq.druncschema.Response>}
  */
-const methodDescriptor_ProcessManager_boot = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/boot',
+const methodDescriptor_ProcessManager_describe = new grpc.web.MethodDescriptor(
+  '/dunedaq.druncschema.ProcessManager/describe',
   grpc.web.MethodType.UNARY,
   request_response_pb.Request,
   request_response_pb.Response,
   /**
-   * @param {!proto.Request} request
+   * @param {!proto.dunedaq.druncschema.Request} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -99,19 +100,80 @@ const methodDescriptor_ProcessManager_boot = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.Response)}
+ * @param {function(?grpc.web.RpcError, ?proto.dunedaq.druncschema.Response)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.Response>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.dunedaq.druncschema.Response>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.boot =
+proto.dunedaq.druncschema.ProcessManagerClient.prototype.describe =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/boot',
+      '/dunedaq.druncschema.ProcessManager/describe',
+      request,
+      metadata || {},
+      methodDescriptor_ProcessManager_describe,
+      callback);
+};
+
+
+/**
+ * @param {!proto.dunedaq.druncschema.Request} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.dunedaq.druncschema.Response>}
+ *     Promise that resolves to the response
+ */
+proto.dunedaq.druncschema.ProcessManagerPromiseClient.prototype.describe =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/dunedaq.druncschema.ProcessManager/describe',
+      request,
+      metadata || {},
+      methodDescriptor_ProcessManager_describe);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.dunedaq.druncschema.Request,
+ *   !proto.dunedaq.druncschema.Response>}
+ */
+const methodDescriptor_ProcessManager_boot = new grpc.web.MethodDescriptor(
+  '/dunedaq.druncschema.ProcessManager/boot',
+  grpc.web.MethodType.UNARY,
+  request_response_pb.Request,
+  request_response_pb.Response,
+  /**
+   * @param {!proto.dunedaq.druncschema.Request} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  request_response_pb.Response.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.dunedaq.druncschema.Request} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.dunedaq.druncschema.Response)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.dunedaq.druncschema.Response>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.dunedaq.druncschema.ProcessManagerClient.prototype.boot =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/dunedaq.druncschema.ProcessManager/boot',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_boot,
@@ -120,17 +182,17 @@ proto.DUNEProcessManager.ProcessManagerClient.prototype.boot =
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.Response>}
+ * @return {!Promise<!proto.dunedaq.druncschema.Response>}
  *     Promise that resolves to the response
  */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.boot =
+proto.dunedaq.druncschema.ProcessManagerPromiseClient.prototype.boot =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/boot',
+      '/dunedaq.druncschema.ProcessManager/boot',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_boot);
@@ -140,16 +202,16 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.boot =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.Request,
- *   !proto.Response>}
+ *   !proto.dunedaq.druncschema.Request,
+ *   !proto.dunedaq.druncschema.Response>}
  */
 const methodDescriptor_ProcessManager_restart = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/restart',
+  '/dunedaq.druncschema.ProcessManager/restart',
   grpc.web.MethodType.UNARY,
   request_response_pb.Request,
   request_response_pb.Response,
   /**
-   * @param {!proto.Request} request
+   * @param {!proto.dunedaq.druncschema.Request} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -160,19 +222,19 @@ const methodDescriptor_ProcessManager_restart = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.Response)}
+ * @param {function(?grpc.web.RpcError, ?proto.dunedaq.druncschema.Response)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.Response>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.dunedaq.druncschema.Response>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.restart =
+proto.dunedaq.druncschema.ProcessManagerClient.prototype.restart =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/restart',
+      '/dunedaq.druncschema.ProcessManager/restart',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_restart,
@@ -181,17 +243,17 @@ proto.DUNEProcessManager.ProcessManagerClient.prototype.restart =
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.Response>}
+ * @return {!Promise<!proto.dunedaq.druncschema.Response>}
  *     Promise that resolves to the response
  */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.restart =
+proto.dunedaq.druncschema.ProcessManagerPromiseClient.prototype.restart =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/restart',
+      '/dunedaq.druncschema.ProcessManager/restart',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_restart);
@@ -201,16 +263,16 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.restart =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.Request,
- *   !proto.Response>}
+ *   !proto.dunedaq.druncschema.Request,
+ *   !proto.dunedaq.druncschema.Response>}
  */
 const methodDescriptor_ProcessManager_kill = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/kill',
+  '/dunedaq.druncschema.ProcessManager/kill',
   grpc.web.MethodType.UNARY,
   request_response_pb.Request,
   request_response_pb.Response,
   /**
-   * @param {!proto.Request} request
+   * @param {!proto.dunedaq.druncschema.Request} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -221,19 +283,19 @@ const methodDescriptor_ProcessManager_kill = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.Response)}
+ * @param {function(?grpc.web.RpcError, ?proto.dunedaq.druncschema.Response)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.Response>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.dunedaq.druncschema.Response>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.kill =
+proto.dunedaq.druncschema.ProcessManagerClient.prototype.kill =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/kill',
+      '/dunedaq.druncschema.ProcessManager/kill',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_kill,
@@ -242,17 +304,17 @@ proto.DUNEProcessManager.ProcessManagerClient.prototype.kill =
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.Response>}
+ * @return {!Promise<!proto.dunedaq.druncschema.Response>}
  *     Promise that resolves to the response
  */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.kill =
+proto.dunedaq.druncschema.ProcessManagerPromiseClient.prototype.kill =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/kill',
+      '/dunedaq.druncschema.ProcessManager/kill',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_kill);
@@ -262,16 +324,16 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.kill =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.Request,
- *   !proto.Response>}
+ *   !proto.dunedaq.druncschema.Request,
+ *   !proto.dunedaq.druncschema.Response>}
  */
 const methodDescriptor_ProcessManager_flush = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/flush',
+  '/dunedaq.druncschema.ProcessManager/flush',
   grpc.web.MethodType.UNARY,
   request_response_pb.Request,
   request_response_pb.Response,
   /**
-   * @param {!proto.Request} request
+   * @param {!proto.dunedaq.druncschema.Request} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -282,19 +344,19 @@ const methodDescriptor_ProcessManager_flush = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.Response)}
+ * @param {function(?grpc.web.RpcError, ?proto.dunedaq.druncschema.Response)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.Response>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.dunedaq.druncschema.Response>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.flush =
+proto.dunedaq.druncschema.ProcessManagerClient.prototype.flush =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/flush',
+      '/dunedaq.druncschema.ProcessManager/flush',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_flush,
@@ -303,17 +365,17 @@ proto.DUNEProcessManager.ProcessManagerClient.prototype.flush =
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.Response>}
+ * @return {!Promise<!proto.dunedaq.druncschema.Response>}
  *     Promise that resolves to the response
  */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.flush =
+proto.dunedaq.druncschema.ProcessManagerPromiseClient.prototype.flush =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/flush',
+      '/dunedaq.druncschema.ProcessManager/flush',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_flush);
@@ -323,16 +385,16 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.flush =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.Request,
- *   !proto.Response>}
+ *   !proto.dunedaq.druncschema.Request,
+ *   !proto.dunedaq.druncschema.Response>}
  */
 const methodDescriptor_ProcessManager_ps = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/ps',
+  '/dunedaq.druncschema.ProcessManager/ps',
   grpc.web.MethodType.UNARY,
   request_response_pb.Request,
   request_response_pb.Response,
   /**
-   * @param {!proto.Request} request
+   * @param {!proto.dunedaq.druncschema.Request} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -343,19 +405,19 @@ const methodDescriptor_ProcessManager_ps = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.Response)}
+ * @param {function(?grpc.web.RpcError, ?proto.dunedaq.druncschema.Response)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.Response>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.dunedaq.druncschema.Response>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.ps =
+proto.dunedaq.druncschema.ProcessManagerClient.prototype.ps =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/ps',
+      '/dunedaq.druncschema.ProcessManager/ps',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_ps,
@@ -364,17 +426,17 @@ proto.DUNEProcessManager.ProcessManagerClient.prototype.ps =
 
 
 /**
- * @param {!proto.Request} request The
+ * @param {!proto.dunedaq.druncschema.Request} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.Response>}
+ * @return {!Promise<!proto.dunedaq.druncschema.Response>}
  *     Promise that resolves to the response
  */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.ps =
+proto.dunedaq.druncschema.ProcessManagerPromiseClient.prototype.ps =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/ps',
+      '/dunedaq.druncschema.ProcessManager/ps',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_ps);
@@ -384,16 +446,16 @@ proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.ps =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.Request,
- *   !proto.Response>}
+ *   !proto.dunedaq.druncschema.Request,
+ *   !proto.dunedaq.druncschema.Response>}
  */
 const methodDescriptor_ProcessManager_logs = new grpc.web.MethodDescriptor(
-  '/DUNEProcessManager.ProcessManager/logs',
+  '/dunedaq.druncschema.ProcessManager/logs',
   grpc.web.MethodType.SERVER_STREAMING,
   request_response_pb.Request,
   request_response_pb.Response,
   /**
-   * @param {!proto.Request} request
+   * @param {!proto.dunedaq.druncschema.Request} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -404,16 +466,16 @@ const methodDescriptor_ProcessManager_logs = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.Request} request The request proto
+ * @param {!proto.dunedaq.druncschema.Request} request The request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.Response>}
+ * @return {!grpc.web.ClientReadableStream<!proto.dunedaq.druncschema.Response>}
  *     The XHR Node Readable Stream
  */
-proto.DUNEProcessManager.ProcessManagerClient.prototype.logs =
+proto.dunedaq.druncschema.ProcessManagerClient.prototype.logs =
     function(request, metadata) {
   return this.client_.serverStreaming(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/logs',
+      '/dunedaq.druncschema.ProcessManager/logs',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_logs);
@@ -421,21 +483,21 @@ proto.DUNEProcessManager.ProcessManagerClient.prototype.logs =
 
 
 /**
- * @param {!proto.Request} request The request proto
+ * @param {!proto.dunedaq.druncschema.Request} request The request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.Response>}
+ * @return {!grpc.web.ClientReadableStream<!proto.dunedaq.druncschema.Response>}
  *     The XHR Node Readable Stream
  */
-proto.DUNEProcessManager.ProcessManagerPromiseClient.prototype.logs =
+proto.dunedaq.druncschema.ProcessManagerPromiseClient.prototype.logs =
     function(request, metadata) {
   return this.client_.serverStreaming(this.hostname_ +
-      '/DUNEProcessManager.ProcessManager/logs',
+      '/dunedaq.druncschema.ProcessManager/logs',
       request,
       metadata || {},
       methodDescriptor_ProcessManager_logs);
 };
 
 
-module.exports = proto.DUNEProcessManager;
+module.exports = proto.dunedaq.druncschema;
 

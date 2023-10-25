@@ -66,3 +66,85 @@ export namespace Response {
   }
 }
 
+export class CommandDescription extends jspb.Message {
+  getName(): string;
+  setName(value: string): CommandDescription;
+
+  getDataTypeList(): Array<string>;
+  setDataTypeList(value: Array<string>): CommandDescription;
+  clearDataTypeList(): CommandDescription;
+  addDataType(value: string, index?: number): CommandDescription;
+
+  getHelp(): string;
+  setHelp(value: string): CommandDescription;
+
+  getReturnType(): string;
+  setReturnType(value: string): CommandDescription;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CommandDescription.AsObject;
+  static toObject(includeInstance: boolean, msg: CommandDescription): CommandDescription.AsObject;
+  static serializeBinaryToWriter(message: CommandDescription, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CommandDescription;
+  static deserializeBinaryFromReader(message: CommandDescription, reader: jspb.BinaryReader): CommandDescription;
+}
+
+export namespace CommandDescription {
+  export type AsObject = {
+    name: string,
+    dataTypeList: Array<string>,
+    help: string,
+    returnType: string,
+  }
+}
+
+export class Description extends jspb.Message {
+  getType(): string;
+  setType(value: string): Description;
+
+  getName(): string;
+  setName(value: string): Description;
+
+  getSession(): string;
+  setSession(value: string): Description;
+  hasSession(): boolean;
+  clearSession(): Description;
+
+  getCommandsList(): Array<CommandDescription>;
+  setCommandsList(value: Array<CommandDescription>): Description;
+  clearCommandsList(): Description;
+  addCommands(value?: CommandDescription, index?: number): CommandDescription;
+
+  getBroadcast(): google_protobuf_any_pb.Any | undefined;
+  setBroadcast(value?: google_protobuf_any_pb.Any): Description;
+  hasBroadcast(): boolean;
+  clearBroadcast(): Description;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Description.AsObject;
+  static toObject(includeInstance: boolean, msg: Description): Description.AsObject;
+  static serializeBinaryToWriter(message: Description, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Description;
+  static deserializeBinaryFromReader(message: Description, reader: jspb.BinaryReader): Description;
+}
+
+export namespace Description {
+  export type AsObject = {
+    type: string,
+    name: string,
+    session?: string,
+    commandsList: Array<CommandDescription.AsObject>,
+    broadcast?: google_protobuf_any_pb.Any.AsObject,
+  }
+
+  export enum SessionCase { 
+    _SESSION_NOT_SET = 0,
+    SESSION = 3,
+  }
+
+  export enum BroadcastCase { 
+    _BROADCAST_NOT_SET = 0,
+    BROADCAST = 5,
+  }
+}
+

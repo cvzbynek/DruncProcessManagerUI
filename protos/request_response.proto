@@ -1,14 +1,33 @@
 syntax = "proto3";
 
-import "token.proto";
+package dunedaq.druncschema;
+
+import "druncschema/token.proto";
 import "google/protobuf/any.proto";
 
 message Request {
-    Token token = 1;
-    optional google.protobuf.Any data = 2;
+  Token token = 1;
+  optional google.protobuf.Any data = 2;
 }
 
 message Response {
-    Token token = 1;
-    optional google.protobuf.Any data = 2;
+  Token token = 1;
+  optional google.protobuf.Any data = 2;
+}
+
+
+message CommandDescription {
+  string name = 1;
+  repeated string data_type = 2;
+  string help = 3;
+  string return_type = 4;
+}
+
+
+message Description {
+  string type = 1;
+  string name = 2;
+  optional string session = 3;
+  repeated CommandDescription commands = 4;
+  optional google.protobuf.Any broadcast = 5;
 }

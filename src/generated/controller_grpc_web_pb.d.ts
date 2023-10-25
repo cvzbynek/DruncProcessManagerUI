@@ -3,10 +3,17 @@ import * as grpcWeb from 'grpc-web';
 import * as request_response_pb from './request_response_pb';
 
 
-export class ProcessManagerClient {
+export class ControllerClient {
   constructor (hostname: string,
                credentials?: null | { [index: string]: string; },
                options?: null | { [index: string]: any; });
+
+  ls(
+    request: request_response_pb.Request,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.RpcError,
+               response: request_response_pb.Response) => void
+  ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
 
   describe(
     request: request_response_pb.Request,
@@ -15,87 +22,130 @@ export class ProcessManagerClient {
                response: request_response_pb.Response) => void
   ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
 
-  boot(
+  get_children_status(
     request: request_response_pb.Request,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.RpcError,
                response: request_response_pb.Response) => void
   ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
 
-  restart(
+  get_status(
     request: request_response_pb.Request,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.RpcError,
                response: request_response_pb.Response) => void
   ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
 
-  kill(
+  describe_fsm(
     request: request_response_pb.Request,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.RpcError,
                response: request_response_pb.Response) => void
   ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
 
-  flush(
+  execute_fsm_command(
     request: request_response_pb.Request,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.RpcError,
                response: request_response_pb.Response) => void
   ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
 
-  ps(
+  include(
     request: request_response_pb.Request,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.RpcError,
                response: request_response_pb.Response) => void
   ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
 
-  logs(
+  exclude(
     request: request_response_pb.Request,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.RpcError,
+               response: request_response_pb.Response) => void
+  ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
+
+  take_control(
+    request: request_response_pb.Request,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.RpcError,
+               response: request_response_pb.Response) => void
+  ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
+
+  surrender_control(
+    request: request_response_pb.Request,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.RpcError,
+               response: request_response_pb.Response) => void
+  ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
+
+  who_is_in_charge(
+    request: request_response_pb.Request,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.RpcError,
+               response: request_response_pb.Response) => void
   ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
 
 }
 
-export class ProcessManagerPromiseClient {
+export class ControllerPromiseClient {
   constructor (hostname: string,
                credentials?: null | { [index: string]: string; },
                options?: null | { [index: string]: any; });
+
+  ls(
+    request: request_response_pb.Request,
+    metadata?: grpcWeb.Metadata
+  ): Promise<request_response_pb.Response>;
 
   describe(
     request: request_response_pb.Request,
     metadata?: grpcWeb.Metadata
   ): Promise<request_response_pb.Response>;
 
-  boot(
+  get_children_status(
     request: request_response_pb.Request,
     metadata?: grpcWeb.Metadata
   ): Promise<request_response_pb.Response>;
 
-  restart(
+  get_status(
     request: request_response_pb.Request,
     metadata?: grpcWeb.Metadata
   ): Promise<request_response_pb.Response>;
 
-  kill(
+  describe_fsm(
     request: request_response_pb.Request,
     metadata?: grpcWeb.Metadata
   ): Promise<request_response_pb.Response>;
 
-  flush(
+  execute_fsm_command(
     request: request_response_pb.Request,
     metadata?: grpcWeb.Metadata
   ): Promise<request_response_pb.Response>;
 
-  ps(
+  include(
     request: request_response_pb.Request,
     metadata?: grpcWeb.Metadata
   ): Promise<request_response_pb.Response>;
 
-  logs(
+  exclude(
     request: request_response_pb.Request,
     metadata?: grpcWeb.Metadata
-  ): grpcWeb.ClientReadableStream<request_response_pb.Response>;
+  ): Promise<request_response_pb.Response>;
+
+  take_control(
+    request: request_response_pb.Request,
+    metadata?: grpcWeb.Metadata
+  ): Promise<request_response_pb.Response>;
+
+  surrender_control(
+    request: request_response_pb.Request,
+    metadata?: grpcWeb.Metadata
+  ): Promise<request_response_pb.Response>;
+
+  who_is_in_charge(
+    request: request_response_pb.Request,
+    metadata?: grpcWeb.Metadata
+  ): Promise<request_response_pb.Response>;
 
 }
 

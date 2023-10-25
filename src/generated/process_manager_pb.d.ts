@@ -29,6 +29,97 @@ export namespace ProcessRestriction {
   }
 }
 
+export class CommandNotificationMessage extends jspb.Message {
+  getUser(): string;
+  setUser(value: string): CommandNotificationMessage;
+
+  getCommand(): string;
+  setCommand(value: string): CommandNotificationMessage;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CommandNotificationMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: CommandNotificationMessage): CommandNotificationMessage.AsObject;
+  static serializeBinaryToWriter(message: CommandNotificationMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CommandNotificationMessage;
+  static deserializeBinaryFromReader(message: CommandNotificationMessage, reader: jspb.BinaryReader): CommandNotificationMessage;
+}
+
+export namespace CommandNotificationMessage {
+  export type AsObject = {
+    user: string,
+    command: string,
+  }
+}
+
+export class GenericNotificationMessage extends jspb.Message {
+  getMessage(): string;
+  setMessage(value: string): GenericNotificationMessage;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GenericNotificationMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: GenericNotificationMessage): GenericNotificationMessage.AsObject;
+  static serializeBinaryToWriter(message: GenericNotificationMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GenericNotificationMessage;
+  static deserializeBinaryFromReader(message: GenericNotificationMessage, reader: jspb.BinaryReader): GenericNotificationMessage;
+}
+
+export namespace GenericNotificationMessage {
+  export type AsObject = {
+    message: string,
+  }
+}
+
+export class ExceptionNotification extends jspb.Message {
+  getErrorText(): string;
+  setErrorText(value: string): ExceptionNotification;
+
+  getStackTraceList(): Array<ExceptionNotification.StackLine>;
+  setStackTraceList(value: Array<ExceptionNotification.StackLine>): ExceptionNotification;
+  clearStackTraceList(): ExceptionNotification;
+  addStackTrace(value?: ExceptionNotification.StackLine, index?: number): ExceptionNotification.StackLine;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ExceptionNotification.AsObject;
+  static toObject(includeInstance: boolean, msg: ExceptionNotification): ExceptionNotification.AsObject;
+  static serializeBinaryToWriter(message: ExceptionNotification, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ExceptionNotification;
+  static deserializeBinaryFromReader(message: ExceptionNotification, reader: jspb.BinaryReader): ExceptionNotification;
+}
+
+export namespace ExceptionNotification {
+  export type AsObject = {
+    errorText: string,
+    stackTraceList: Array<ExceptionNotification.StackLine.AsObject>,
+  }
+
+  export class StackLine extends jspb.Message {
+    getLineText(): string;
+    setLineText(value: string): StackLine;
+
+    getLineNumber(): string;
+    setLineNumber(value: string): StackLine;
+
+    getFile(): string;
+    setFile(value: string): StackLine;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): StackLine.AsObject;
+    static toObject(includeInstance: boolean, msg: StackLine): StackLine.AsObject;
+    static serializeBinaryToWriter(message: StackLine, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): StackLine;
+    static deserializeBinaryFromReader(message: StackLine, reader: jspb.BinaryReader): StackLine;
+  }
+
+  export namespace StackLine {
+    export type AsObject = {
+      lineText: string,
+      lineNumber: string,
+      file: string,
+    }
+  }
+
+}
+
 export class LogRequest extends jspb.Message {
   getQuery(): ProcessQuery | undefined;
   setQuery(value?: ProcessQuery): LogRequest;
@@ -140,13 +231,9 @@ export class ProcessQuery extends jspb.Message {
 
   getUser(): string;
   setUser(value: string): ProcessQuery;
-  hasUser(): boolean;
-  clearUser(): ProcessQuery;
 
   getSession(): string;
   setSession(value: string): ProcessQuery;
-  hasSession(): boolean;
-  clearSession(): ProcessQuery;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessQuery.AsObject;
@@ -160,18 +247,8 @@ export namespace ProcessQuery {
   export type AsObject = {
     uuidsList: Array<ProcessUUID.AsObject>,
     namesList: Array<string>,
-    user?: string,
-    session?: string,
-  }
-
-  export enum UserCase { 
-    _USER_NOT_SET = 0,
-    USER = 3,
-  }
-
-  export enum SessionCase { 
-    _SESSION_NOT_SET = 0,
-    SESSION = 4,
+    user: string,
+    session: string,
   }
 }
 
@@ -267,8 +344,6 @@ export class ProcessInstance extends jspb.Message {
 
   getReturnCode(): number;
   setReturnCode(value: number): ProcessInstance;
-  hasReturnCode(): boolean;
-  clearReturnCode(): ProcessInstance;
 
   getUuid(): ProcessUUID | undefined;
   setUuid(value?: ProcessUUID): ProcessInstance;
@@ -288,18 +363,13 @@ export namespace ProcessInstance {
     processDescription?: ProcessDescription.AsObject,
     processRestriction?: ProcessRestriction.AsObject,
     statusCode: ProcessInstance.StatusCode,
-    returnCode?: number,
+    returnCode: number,
     uuid?: ProcessUUID.AsObject,
   }
 
   export enum StatusCode { 
     RUNNING = 0,
     DEAD = 1,
-  }
-
-  export enum ReturnCodeCase { 
-    _RETURN_CODE_NOT_SET = 0,
-    RETURN_CODE = 4,
   }
 }
 
