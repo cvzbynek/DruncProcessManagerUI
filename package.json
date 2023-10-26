@@ -7,17 +7,31 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "bootstrap": "^5.2.3",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "concurrently": "^8.2.2",
+    "crypto": "^1.0.1",
+    "crypto-browserify": "^3.12.0",
     "google-protobuf": "^3.21.2",
+    "kafka-node": "^5.0.0",
+    "kafkajs": "^2.2.4",
+    "net": "^1.0.2",
+    "npm": "^10.2.1",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "^5.0.1",
+    "stream-browserify": "^3.0.0",
+    "tls": "0.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start-server": "node server/server.js",
+    "dev": "concurrently \"npm start\" \"npm run start-server\""
   },
   "eslintConfig": {
     "extends": [
@@ -38,7 +52,12 @@
     ]
   },
   "devDependencies": {
+    "assert": "^2.1.0",
     "depcheck": "^1.4.3",
-    "grpc-web": "^1.4.2"
+    "grpc-web": "^1.4.2",
+    "webpack": "^5.89.0"
+  },
+  "browser": {
+    "crypto": false
   }
 }

@@ -19,6 +19,7 @@ function logError(error){
   console.error('Error:', error.message);
 }
 
+
 function ProcessManager() {
   const [processInstances, setProcessInstances] = useState([]);
   const [selectedUUIDs, setSelectedUUIDs] = useState([]);
@@ -47,6 +48,27 @@ function ProcessManager() {
       setAllChecked(false);
     }
   }, [selectedUUIDs, processInstances]);
+
+  useEffect(() => {
+    const ws = new WebSocket('ws://localhost:3001');
+
+    ws.onmessage = (event) => {
+      const message = event.data;
+      console.log('Received:', message);
+      if(!message.endsWith('_ps_impl')){
+        ps()
+      }
+
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket Error:', error);
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
 
   const handleSelectAllChange = useCallback((event) => {
     if (event.target.checked) {
@@ -292,7 +314,7 @@ function ProcessManager() {
       case 'boot':
         setShowModal(false);
         boot(configFile, user, session)
-        setTimeout(ps, 1000);
+        //setTimeout(ps, 1000);
         break;
       case 'ps':
         setSelectedUUIDs([]);
@@ -307,7 +329,7 @@ function ProcessManager() {
         break;
       case 'flush':
         handleFlush();
-        setTimeout(ps, 1000);
+        //setTimeout(ps, 1000);
         setSelectedUUIDs([]);
         setSelectedNames([]);
         break;
@@ -370,6 +392,7 @@ function ProcessManager() {
       setSelectedNames((prevNames) => prevNames.filter((item) => item !== name));
     }
   }, [processInstances, setSelectAll, setSelectedUUIDs, setSelectedNames]);
+
 
   const handleModalClose = useCallback(() => {
     // Reset modal state on close
