@@ -9,6 +9,7 @@ import { Token } from './generated/token_pb';
 import { Any } from 'google-protobuf/google/protobuf/any_pb';
 import HelpComponent from './HelpComponent';
 import LogModal from './LogModal';
+import ConsoleWindow from './ConsoleWindow';
 import { debounce } from 'lodash';
 import BootModal from './BootModal';
 import KillConfirmationModal from './KillConfirmationModal';
@@ -38,6 +39,7 @@ function ProcessManager() {
   const [selectedNames, setSelectedNames] = useState([]);
   const [howFar, setHowFar] = useState(100);
   const [currentUUID, setCurrentUUID] = useState('');
+  const [showConsole, setShowConsole] = useState(false);
 
   useEffect(() => {
     if (processInstances.length === 0) {
@@ -127,7 +129,8 @@ function ProcessManager() {
       const processMetadata = new ProcessMetadata();
       const processRestriction = new ProcessRestriction();
   
-      processMetadata.setUser(sessionStorage.getItem('username'));
+      //processMetadata.setUser(sessionStorage.getItem('username'));
+      processMetadata.setUser("patreides");
       processMetadata.setSession(session);
       processMetadata.setName(app.name);
   
@@ -189,6 +192,9 @@ function ProcessManager() {
     setShowKillConfirm(false); // Close the modal after the request is sent
   }, [selectedUUIDs, client, request]);
 
+  const handleCloseConsole = () => {
+    setShowConsole(false);
+  };
 
   const handleFlush = useCallback(() => {
     const query = new ProcessQuery();
@@ -316,16 +322,15 @@ function ProcessManager() {
         boot(configFile, user, session)
         //setTimeout(ps, 1000);
         break;
-      case 'ps':
-        setSelectedUUIDs([]);
-        ps();
+      case 'openKafkaStream':
+        setShowConsole(true);
         break;
       case 'kill':
         handleKill();
         break;
       case 'logs':
         fetchLogs();
-        ps();
+        //ps();
         break;
       case 'flush':
         handleFlush();
@@ -432,8 +437,9 @@ function ProcessManager() {
         </Button>{' '}
       </Col>
       <Col className="pr-5">
-        <Button variant="light" onClick={() => handleActionClick('ps')}>
-          <FontAwesomeIcon icon={faListAlt} /> Update
+        <Button variant="light" onClick={() => handleActionClick('openKafkaStream')}>
+          <FontAwesomeIcon icon={faListAlt} /> Open Kafka Stream
+          {showConsole && <ConsoleWindow onClose={handleCloseConsole} />}
         </Button>{' '}
       </Col>
       <Col className="pr-5">
