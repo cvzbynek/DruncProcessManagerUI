@@ -12,8 +12,35 @@ const ConsoleWindow = ({ onClose }) => {
       return;
     }
 
-    // Write directly to the new window to test
-    externalWindow.document.write('<h1>Kafka Stream Console</h1>');
+    // Write initial HTML structure to the new window with terminal-like styles
+    externalWindow.document.write(`
+      <html>
+        <head>
+          <title>Kafka Stream Console</title>
+          <style>
+            body { 
+              font-family: 'Courier New', monospace; 
+              margin: 0;
+              height: 100%;
+              overflow: hidden; 
+            }
+            #console { 
+              background-color: #000; 
+              color: #33FF00; 
+              padding: 10px;
+              height: calc(100% - 20px);
+              white-space: pre-wrap;
+              overflow-y: scroll;
+              box-sizing: border-box;
+            }
+          </style>
+        </head>
+        <body>
+          <div id="console"></div>
+        </body>
+      </html>
+    `);
+    externalWindow.document.close(); // Close the document stream
 
     // Check if the external window is still open before trying to access it
     const checkExternalWindow = () => {
@@ -42,6 +69,12 @@ const ConsoleWindow = ({ onClose }) => {
       const message = event.data;
       console.log('Received:', message);
       setMessages(prevMessages => [...prevMessages, message]);
+      // Update the content of the new window
+      if (externalWindow && !externalWindow.closed) {
+        const consoleDiv = externalWindow.document.getElementById('console');
+        consoleDiv.textContent += `${message}\n`; // Add the new message to the console
+        consoleDiv.scrollTop = consoleDiv.scrollHeight; // Auto-scroll to the latest message
+      }
     };
 
     ws.onerror = (error) => {
